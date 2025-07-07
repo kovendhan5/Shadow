@@ -1,1 +1,53 @@
-pyautogui
+# Core dependencies
+pyautogui==0.9.54
+pynput==1.7.6
+keyboard==0.13.5
+
+# Voice input and TTS
+SpeechRecognition==3.10.0
+pyaudio==0.2.11
+pyttsx3==2.90
+openai-whisper==20231117
+
+# AI/LLM integration
+openai==1.3.0
+google-generativeai==0.3.0
+requests==2.31.0
+
+# Browser automation
+selenium==4.15.0
+webdriver-manager==4.0.1
+
+# Document generation
+python-docx==1.1.0
+PyPDF2==3.0.1
+reportlab==4.0.7
+
+# Windows specific
+pywin32==306
+comtypes==1.2.0
+
+# GUI frameworks
+tkinter-tooltip==2.1.0
+customtkinter==5.2.2
+
+# Web framework
+flask==3.0.0
+flask-socketio==5.3.6
+
+# Image processing
+Pillow==10.1.0
+
+# Web scraping
+beautifulsoup4==4.12.2
+lxml==4.9.3
+
+# Utility packages
+python-dotenv==1.0.0
+schedule==1.2.0
+psutil==5.9.6
+colorama==0.4.6
+
+# Testing
+pytest==7.4.3
+pytest-mock==3.12.0
