@@ -22,7 +22,7 @@ from task_manager import task_manager
 
 if FLASK_AVAILABLE:
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'shadow-ai-secret-key'
+    app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY', 'dev-key-change-in-production')
     socketio = SocketIO(app, cors_allowed_origins="*")
     
     # Global Shadow AI instance
