@@ -93,6 +93,8 @@ class ModernShadowGUI:
         self.pulse_value = 0
         self.typing_dots = 0
         self.progress_value = 0
+        self.glow_intensity = 0
+        self.button_hover_state = {}
         
         # Queue for thread communication
         self.task_queue = queue.Queue()
@@ -122,39 +124,102 @@ class ModernShadowGUI:
         y = (self.root.winfo_screenheight() // 2) - (800 // 2)
         self.root.geometry(f"1200x800+{x}+{y}")
         
-        # Set dark theme colors
+        # Set ultra-modern premium color scheme with vibrant gradients
         self.colors = {
-            'bg_primary': '#1a1a1a',
-            'bg_secondary': '#2d2d2d',
-            'bg_tertiary': '#404040',
-            'accent': '#00d4aa',
-            'accent_hover': '#00b896',
-            'text_primary': '#ffffff',
-            'text_secondary': '#b0b0b0',
-            'success': '#4ade80',
-            'warning': '#fbbf24',
-            'error': '#f87171',
-            'processing': '#60a5fa'
+            # Dark theme base colors
+            'bg_primary': '#0d0d0f',      # Deep space black
+            'bg_secondary': '#1a1a1f',    # Dark charcoal
+            'bg_tertiary': '#2a2a35',     # Medium gray-blue
+            'bg_card': '#1e1e26',         # Card background
+            'bg_elevated': '#252530',     # Elevated surfaces
+            
+            # Vibrant accent colors
+            'accent': '#00f5ff',          # Electric cyan
+            'accent_hover': '#00e1ff',    # Brighter cyan
+            'accent_secondary': '#ff006e', # Hot pink
+            'accent_tertiary': '#8b5cf6', # Purple
+            'accent_gold': '#fbbf24',     # Gold
+            
+            # Gradient colors
+            'gradient_start': '#667eea',  # Purple-blue
+            'gradient_end': '#764ba2',    # Deep purple
+            'gradient_warm_start': '#ff9a8b',  # Warm pink
+            'gradient_warm_end': '#a8edea',    # Mint
+            'gradient_cool_start': '#667eea',  # Cool blue
+            'gradient_cool_end': '#764ba2',    # Purple
+            
+            # Text colors
+            'text_primary': '#ffffff',    # Pure white
+            'text_secondary': '#b8c5d1',  # Light blue-gray
+            'text_muted': '#8a94a6',      # Muted blue-gray
+            'text_accent': '#00f5ff',     # Accent text
+            
+            # Status colors
+            'success': '#10b981',         # Emerald green
+            'warning': '#f59e0b',         # Amber
+            'error': '#ef4444',           # Red
+            'processing': '#3b82f6',      # Blue
+            'info': '#06b6d4',            # Cyan
+            
+            # Effect colors
+            'glow': '#00f5ff60',          # Translucent glow
+            'glow_strong': '#00f5ff80',   # Strong glow
+            'shadow': '#000000cc',        # Deep shadow
+            'border': '#404040',          # Border color
+            'border_active': '#00f5ff',   # Active border
+            
+            # Animation colors
+            'pulse_start': '#667eea',     # Pulse start
+            'pulse_end': '#764ba2',       # Pulse end
+            'shimmer': '#ffffff40',       # Shimmer effect
         }
         
         self.root.configure(bg=self.colors['bg_primary'])
         
     def setup_styles(self):
-        """Configure ttk styles"""
+        """Configure enhanced ttk styles with modern design"""
         style = ttk.Style()
         style.theme_use('clam')
         
-        # Configure styles
-        style.configure('Modern.TFrame', background=self.colors['bg_primary'])
-        style.configure('Card.TFrame', background=self.colors['bg_secondary'], relief='flat', borderwidth=1)
-        style.configure('Title.TLabel', background=self.colors['bg_primary'], foreground=self.colors['text_primary'], 
-                       font=('Segoe UI', 24, 'bold'))
-        style.configure('Subtitle.TLabel', background=self.colors['bg_primary'], foreground=self.colors['text_secondary'], 
-                       font=('Segoe UI', 12))
-        style.configure('Status.TLabel', background=self.colors['bg_secondary'], foreground=self.colors['text_primary'], 
-                       font=('Segoe UI', 10))
-        style.configure('Modern.TButton', font=('Segoe UI', 11), padding=(20, 10))
-        style.configure('Accent.TButton', background=self.colors['accent'], foreground='white', font=('Segoe UI', 11, 'bold'))
+        # Enhanced styles with modern aesthetics
+        style.configure('Modern.TFrame', 
+                       background=self.colors['bg_primary'],
+                       relief='flat',
+                       borderwidth=0)
+        
+        style.configure('Card.TFrame', 
+                       background=self.colors['bg_card'],
+                       relief='flat',
+                       borderwidth=1,
+                       fieldbackground=self.colors['bg_card'])
+        
+        style.configure('Title.TLabel', 
+                       background=self.colors['bg_primary'], 
+                       foreground=self.colors['text_primary'], 
+                       font=('Segoe UI Light', 28, 'bold'))
+        
+        style.configure('Subtitle.TLabel', 
+                       background=self.colors['bg_primary'], 
+                       foreground=self.colors['text_secondary'], 
+                       font=('Segoe UI', 13))
+        
+        style.configure('Status.TLabel', 
+                       background=self.colors['bg_card'], 
+                       foreground=self.colors['text_primary'], 
+                       font=('Segoe UI Semibold', 10))
+        
+        style.configure('Modern.TButton', 
+                       font=('Segoe UI', 11), 
+                       padding=(25, 15),
+                       relief='flat',
+                       borderwidth=0)
+        
+        style.configure('Accent.TButton', 
+                       background=self.colors['accent'], 
+                       foreground='white', 
+                       font=('Segoe UI', 12, 'bold'),
+                       relief='flat',
+                       borderwidth=0)
         
     def create_widgets(self):
         """Create and layout all GUI widgets"""
@@ -169,203 +234,339 @@ class ModernShadowGUI:
         content_frame = ttk.Frame(main_frame, style='Modern.TFrame')
         content_frame.pack(fill='both', expand=True, pady=(20, 0))
         
-        # Left panel - Input and controls
-        left_panel = ttk.Frame(content_frame, style='Card.TFrame')
-        left_panel.pack(side='left', fill='both', expand=True, padx=(0, 10))
+        # Enhanced left panel with shadow effect
+        left_panel = tk.Frame(content_frame, bg=self.colors['bg_card'], 
+                             relief='flat', bd=1,
+                             highlightbackground=self.colors['border'],
+                             highlightthickness=1)
+        left_panel.pack(side='left', fill='both', expand=True, padx=(0, 15))
         self.create_input_panel(left_panel)
         
-        # Right panel - Status and visualization
-        right_panel = ttk.Frame(content_frame, style='Card.TFrame')
-        right_panel.pack(side='right', fill='both', expand=True, padx=(10, 0))
+        # Enhanced right panel with shadow effect  
+        right_panel = tk.Frame(content_frame, bg=self.colors['bg_card'], 
+                              relief='flat', bd=1,
+                              highlightbackground=self.colors['border'],
+                              highlightthickness=1)
+        right_panel.pack(side='right', fill='both', expand=True, padx=(15, 0))
         self.create_status_panel(right_panel)
         
     def create_header(self, parent):
-        """Create the header section"""
+        """Create the enhanced header section with gradient effects"""
         header_frame = ttk.Frame(parent, style='Modern.TFrame')
-        header_frame.pack(fill='x', pady=(0, 20))
+        header_frame.pack(fill='x', pady=(0, 30))
         
-        # Title and subtitle with gradient effect
-        title_label = ttk.Label(header_frame, text="🧠 Shadow AI", style='Title.TLabel')
-        title_label.pack(anchor='center')
+        # Main title with enhanced styling
+        title_container = tk.Frame(header_frame, bg=self.colors['bg_primary'])
+        title_container.pack(anchor='center', pady=(10, 5))
         
-        subtitle_label = ttk.Label(header_frame, text="Universal AI Assistant with Advanced Capabilities", 
-                                  style='Subtitle.TLabel')
-        subtitle_label.pack(anchor='center')
+        title_label = tk.Label(title_container, text="🧠 Shadow AI", 
+                              font=('Segoe UI Light', 32, 'bold'),
+                              bg=self.colors['bg_primary'], 
+                              fg=self.colors['accent'])
+        title_label.pack()
         
-        # Version and status info
-        info_frame = ttk.Frame(header_frame, style='Modern.TFrame')
-        info_frame.pack(anchor='center', pady=(5, 0))
+        # Animated subtitle with gradient effect
+        subtitle_label = tk.Label(header_frame, 
+                                 text="Universal AI Assistant with Advanced Capabilities", 
+                                 font=('Segoe UI', 14),
+                                 bg=self.colors['bg_primary'], 
+                                 fg=self.colors['text_secondary'])
+        subtitle_label.pack(anchor='center', pady=(0, 10))
         
-        version_label = ttk.Label(info_frame, text="v2.0 | Powered by Gemini AI", 
-                                 font=('Segoe UI', 9), 
-                                 background=self.colors['bg_primary'], 
-                                 foreground=self.colors['text_secondary'])
-        version_label.pack(side='left', padx=(0, 20))
+        # Enhanced info section with cards
+        info_container = tk.Frame(header_frame, bg=self.colors['bg_primary'])
+        info_container.pack(anchor='center', pady=(10, 0))
         
-        # Status indicator
-        self.status_frame = ttk.Frame(info_frame, style='Modern.TFrame')
-        self.status_frame.pack(side='left')
+        # Version card
+        version_card = tk.Frame(info_container, bg=self.colors['bg_card'], 
+                               relief='flat', bd=1)
+        version_card.pack(side='left', padx=(0, 20), pady=5)
         
-        self.status_indicator = tk.Canvas(self.status_frame, width=16, height=16, 
-                                         bg=self.colors['bg_primary'], highlightthickness=0)
-        self.status_indicator.pack(side='left', padx=(0, 8))
+        version_label = tk.Label(version_card, text="v2.0 | Powered by Gemini AI", 
+                                font=('Segoe UI', 10, 'bold'), 
+                                bg=self.colors['bg_card'], 
+                                fg=self.colors['text_muted'],
+                                padx=15, pady=8)
+        version_label.pack()
         
-        self.status_label = ttk.Label(self.status_frame, text="Ready", style='Status.TLabel')
+        # Enhanced status indicator with glow effect
+        status_card = tk.Frame(info_container, bg=self.colors['bg_card'], 
+                              relief='flat', bd=1)
+        status_card.pack(side='left', pady=5)
+        
+        self.status_frame = tk.Frame(status_card, bg=self.colors['bg_card'])
+        self.status_frame.pack(padx=15, pady=8)
+        
+        self.status_indicator = tk.Canvas(self.status_frame, width=20, height=20, 
+                                         bg=self.colors['bg_card'], highlightthickness=0)
+        self.status_indicator.pack(side='left', padx=(0, 10))
+        
+        self.status_label = tk.Label(self.status_frame, text="Ready", 
+                                    font=('Segoe UI Semibold', 10),
+                                    bg=self.colors['bg_card'], 
+                                    fg=self.colors['text_primary'])
         self.status_label.pack(side='left')
         
-        # Draw initial status indicator
+        # Draw enhanced status indicator with glow
         self.update_status_indicator('ready')
         
     def create_input_panel(self, parent):
         """Create the input and control panel"""
-        # Panel title
-        title_frame = ttk.Frame(parent, style='Card.TFrame')
-        title_frame.pack(fill='x', padx=20, pady=(20, 10))
+        # Enhanced panel title with modern styling
+        title_frame = tk.Frame(parent, bg=self.colors['bg_card'])
+        title_frame.pack(fill='x', padx=20, pady=(25, 15))
         
-        title_label = ttk.Label(title_frame, text="💬 Command Center", 
-                               font=('Segoe UI', 16, 'bold'), 
-                               background=self.colors['bg_secondary'], 
-                               foreground=self.colors['text_primary'])
+        title_label = tk.Label(title_frame, text="💬 Command Center", 
+                              font=('Segoe UI', 18, 'bold'), 
+                              bg=self.colors['bg_card'], 
+                              fg=self.colors['accent'])
         title_label.pack(anchor='w')
         
-        # Input section
-        input_frame = ttk.Frame(parent, style='Card.TFrame')
-        input_frame.pack(fill='x', padx=20, pady=10)
+        subtitle_label = tk.Label(title_frame, text="Enter your commands or use voice input", 
+                                 font=('Segoe UI', 11), 
+                                 bg=self.colors['bg_card'], 
+                                 fg=self.colors['text_muted'])
+        subtitle_label.pack(anchor='w', pady=(2, 0))
         
-        # Text input
-        input_label = ttk.Label(input_frame, text="What would you like me to do?", 
-                               font=('Segoe UI', 11), 
-                               background=self.colors['bg_secondary'], 
-                               foreground=self.colors['text_secondary'])
-        input_label.pack(anchor='w', pady=(0, 5))
+        # Enhanced input section with better styling
+        input_frame = tk.Frame(parent, bg=self.colors['bg_card'], relief='flat')
+        input_frame.pack(fill='x', padx=20, pady=15)
         
-        self.command_entry = tk.Text(input_frame, height=3, font=('Segoe UI', 11), 
-                                    bg=self.colors['bg_tertiary'], fg=self.colors['text_primary'], 
-                                    insertbackground=self.colors['accent'], relief='flat', 
-                                    wrap='word', padx=15, pady=10)
-        self.command_entry.pack(fill='x', pady=(0, 10))
+        # Text input label with better styling
+        input_label = tk.Label(input_frame, text="What would you like me to do?", 
+                              font=('Segoe UI', 12, 'bold'), 
+                              bg=self.colors['bg_card'], 
+                              fg=self.colors['text_primary'])
+        input_label.pack(anchor='w', pady=(0, 8))
         
-        # Control buttons
-        button_frame = ttk.Frame(input_frame, style='Card.TFrame')
-        button_frame.pack(fill='x')
+        # Enhanced text input with border and styling
+        input_container = tk.Frame(input_frame, bg=self.colors['border'], relief='flat')
+        input_container.pack(fill='x', pady=(0, 15))
         
+        self.command_entry = tk.Text(input_container, height=3, 
+                                    font=('Segoe UI', 12), 
+                                    bg=self.colors['bg_tertiary'], 
+                                    fg=self.colors['text_primary'], 
+                                    insertbackground=self.colors['accent'], 
+                                    relief='flat', 
+                                    bd=0,
+                                    wrap='word', 
+                                    padx=20, pady=15,
+                                    selectbackground=self.colors['accent'],
+                                    selectforeground='white')
+        self.command_entry.pack(fill='x', padx=2, pady=2)
+        
+        # Enhanced control buttons with modern styling
+        button_frame = tk.Frame(input_frame, bg=self.colors['bg_card'])
+        button_frame.pack(fill='x', pady=(10, 0))
+        
+        # Execute button with gradient effect and hover
         self.execute_btn = tk.Button(button_frame, text="✨ Execute", 
-                                    font=('Segoe UI', 11, 'bold'), 
-                                    bg=self.colors['accent'], fg='white', 
-                                    relief='flat', padx=30, pady=12,
+                                    font=('Segoe UI', 12, 'bold'), 
+                                    bg=self.colors['accent'], 
+                                    fg='white', 
+                                    activebackground=self.colors['accent_hover'],
+                                    activeforeground='white',
+                                    relief='flat', 
+                                    bd=0,
+                                    padx=35, pady=15,
+                                    cursor='hand2',
                                     command=self.execute_command)
-        self.execute_btn.pack(side='left', padx=(0, 10))
+        self.execute_btn.pack(side='left', padx=(0, 12))
         
+        # Add hover effects
+        self.execute_btn.bind('<Enter>', lambda e: self.button_hover(self.execute_btn, True))
+        self.execute_btn.bind('<Leave>', lambda e: self.button_hover(self.execute_btn, False))
+        
+        # Voice button with modern styling and hover
         self.voice_btn = tk.Button(button_frame, text="🎤 Voice", 
-                                  font=('Segoe UI', 11), 
-                                  bg=self.colors['bg_tertiary'], fg=self.colors['text_primary'], 
-                                  relief='flat', padx=20, pady=12,
+                                  font=('Segoe UI', 11, 'bold'), 
+                                  bg=self.colors['bg_tertiary'], 
+                                  fg=self.colors['text_primary'], 
+                                  activebackground=self.colors['accent_secondary'],
+                                  activeforeground='white',
+                                  relief='flat', 
+                                  bd=0,
+                                  padx=25, pady=15,
+                                  cursor='hand2',
                                   command=self.toggle_voice_mode)
-        self.voice_btn.pack(side='left', padx=(0, 10))
+        self.voice_btn.pack(side='left', padx=(0, 12))
         
+        # Add hover effects
+        self.voice_btn.bind('<Enter>', lambda e: self.button_hover(self.voice_btn, True))
+        self.voice_btn.bind('<Leave>', lambda e: self.button_hover(self.voice_btn, False))
+        
+        # Clear button with subtle styling and hover
         self.clear_btn = tk.Button(button_frame, text="🗑️ Clear", 
                                   font=('Segoe UI', 11), 
-                                  bg=self.colors['bg_tertiary'], fg=self.colors['text_primary'], 
-                                  relief='flat', padx=20, pady=12,
+                                  bg=self.colors['bg_tertiary'], 
+                                  fg=self.colors['text_secondary'], 
+                                  activebackground=self.colors['error'],
+                                  activeforeground='white',
+                                  relief='flat', 
+                                  bd=0,
+                                  padx=25, pady=15,
+                                  cursor='hand2',
                                   command=self.clear_input)
         self.clear_btn.pack(side='left')
         
-        # Examples section
-        examples_frame = ttk.Frame(parent, style='Card.TFrame')
-        examples_frame.pack(fill='both', expand=True, padx=20, pady=(20, 20))
+        # Add hover effects
+        self.clear_btn.bind('<Enter>', lambda e: self.button_hover(self.clear_btn, True))
+        self.clear_btn.bind('<Leave>', lambda e: self.button_hover(self.clear_btn, False))
         
-        examples_label = ttk.Label(examples_frame, text="💡 Example Commands", 
-                                  font=('Segoe UI', 14, 'bold'), 
-                                  background=self.colors['bg_secondary'], 
-                                  foreground=self.colors['text_primary'])
-        examples_label.pack(anchor='w', pady=(0, 10))
+        # Enhanced examples section with better styling
+        examples_frame = tk.Frame(parent, bg=self.colors['bg_card'], relief='flat')
+        examples_frame.pack(fill='both', expand=True, padx=20, pady=(25, 25))
         
+        # Examples header with icon
+        examples_header = tk.Frame(examples_frame, bg=self.colors['bg_card'])
+        examples_header.pack(fill='x', padx=20, pady=(20, 15))
+        
+        examples_label = tk.Label(examples_header, text="💡 Example Commands", 
+                                 font=('Segoe UI', 16, 'bold'), 
+                                 bg=self.colors['bg_card'], 
+                                 fg=self.colors['accent'])
+        examples_label.pack(anchor='w')
+        
+        examples_hint = tk.Label(examples_header, text="Double-click any example to try it", 
+                                font=('Segoe UI', 10), 
+                                bg=self.colors['bg_card'], 
+                                fg=self.colors['text_muted'])
+        examples_hint.pack(anchor='w', pady=(2, 0))
+        
+        # Enhanced examples list with better styling
         examples = [
-            "Write an article about artificial intelligence",
-            "Open Notepad and create a shopping list",
-            "Search for the best laptops under $1000",
-            "Create a professional email template",
-            "Take a screenshot and save it to desktop",
-            "Organize my Downloads folder by file type"
+            "✍️ Write an article about artificial intelligence",
+            "📝 Open Notepad and create a shopping list", 
+            "🔍 Search for the best laptops under $1000",
+            "📧 Create a professional email template",
+            "📸 Take a screenshot and save it to desktop",
+            "📁 Organize my Downloads folder by file type"
         ]
         
-        self.examples_listbox = tk.Listbox(examples_frame, font=('Segoe UI', 10), 
+        # Custom styled listbox
+        listbox_frame = tk.Frame(examples_frame, bg=self.colors['bg_tertiary'], 
+                                relief='flat', bd=1)
+        listbox_frame.pack(fill='both', expand=True, padx=20, pady=(0, 20))
+        
+        self.examples_listbox = tk.Listbox(listbox_frame, 
+                                          font=('Segoe UI', 11), 
                                           bg=self.colors['bg_tertiary'], 
-                                          fg=self.colors['text_secondary'], 
+                                          fg=self.colors['text_primary'], 
                                           selectbackground=self.colors['accent'], 
-                                          relief='flat', height=6)
-        self.examples_listbox.pack(fill='both', expand=True)
+                                          selectforeground='white',
+                                          activestyle='none',
+                                          relief='flat', 
+                                          bd=0,
+                                          height=6,
+                                          highlightthickness=0)
+        self.examples_listbox.pack(fill='both', expand=True, padx=5, pady=5)
         
         for example in examples:
             self.examples_listbox.insert(tk.END, f"  {example}")
         
         self.examples_listbox.bind('<Double-Button-1>', self.use_example)
         
+        # Add hover effects
+        self.examples_listbox.bind('<Enter>', lambda e: self.examples_listbox.config(cursor='hand2'))
+        self.examples_listbox.bind('<Leave>', lambda e: self.examples_listbox.config(cursor=''))
+        
     def create_status_panel(self, parent):
         """Create the status and visualization panel"""
-        # Panel title
-        title_frame = ttk.Frame(parent, style='Card.TFrame')
-        title_frame.pack(fill='x', padx=20, pady=(20, 10))
+        # Enhanced panel title
+        title_frame = tk.Frame(parent, bg=self.colors['bg_card'])
+        title_frame.pack(fill='x', padx=20, pady=(25, 15))
         
-        title_label = ttk.Label(title_frame, text="📊 Task Monitor", 
-                               font=('Segoe UI', 16, 'bold'), 
-                               background=self.colors['bg_secondary'], 
-                               foreground=self.colors['text_primary'])
+        title_label = tk.Label(title_frame, text="📊 Task Monitor", 
+                              font=('Segoe UI', 18, 'bold'), 
+                              bg=self.colors['bg_card'], 
+                              fg=self.colors['accent'])
         title_label.pack(anchor='w')
         
-        # Current task section
-        task_frame = ttk.Frame(parent, style='Card.TFrame')
-        task_frame.pack(fill='x', padx=20, pady=10)
+        subtitle_label = tk.Label(title_frame, text="Real-time task progress and activity", 
+                                 font=('Segoe UI', 11), 
+                                 bg=self.colors['bg_card'], 
+                                 fg=self.colors['text_muted'])
+        subtitle_label.pack(anchor='w', pady=(2, 0))
         
-        task_label = ttk.Label(task_frame, text="Current Task:", 
-                              font=('Segoe UI', 11, 'bold'), 
-                              background=self.colors['bg_secondary'], 
-                              foreground=self.colors['text_secondary'])
+        # Enhanced current task section
+        task_frame = tk.Frame(parent, bg=self.colors['bg_card'])
+        task_frame.pack(fill='x', padx=20, pady=12)
+        
+        task_label = tk.Label(task_frame, text="Current Task:", 
+                             font=('Segoe UI', 12, 'bold'), 
+                             bg=self.colors['bg_card'], 
+                             fg=self.colors['text_secondary'])
         task_label.pack(anchor='w')
         
-        self.current_task_label = ttk.Label(task_frame, text="Waiting for command...", 
-                                           font=('Segoe UI', 11), 
-                                           background=self.colors['bg_secondary'], 
-                                           foreground=self.colors['text_primary'])
+        self.current_task_label = tk.Label(task_frame, text="Waiting for command...", 
+                                          font=('Segoe UI', 11), 
+                                          bg=self.colors['bg_card'], 
+                                          fg=self.colors['text_primary'],
+                                          wraplength=300)
         self.current_task_label.pack(anchor='w', pady=(5, 0))
         
-        # Progress section
-        progress_frame = ttk.Frame(parent, style='Card.TFrame')
-        progress_frame.pack(fill='x', padx=20, pady=10)
+        # Enhanced progress section
+        progress_frame = tk.Frame(parent, bg=self.colors['bg_card'])
+        progress_frame.pack(fill='x', padx=20, pady=12)
         
-        progress_label = ttk.Label(progress_frame, text="Progress:", 
-                                  font=('Segoe UI', 11, 'bold'), 
-                                  background=self.colors['bg_secondary'], 
-                                  foreground=self.colors['text_secondary'])
+        progress_label = tk.Label(progress_frame, text="Progress:", 
+                                 font=('Segoe UI', 12, 'bold'), 
+                                 bg=self.colors['bg_card'], 
+                                 fg=self.colors['text_secondary'])
         progress_label.pack(anchor='w')
         
-        self.progress_canvas = tk.Canvas(progress_frame, height=20, 
+        # Enhanced progress canvas with border
+        progress_container = tk.Frame(progress_frame, bg=self.colors['border'])
+        progress_container.pack(fill='x', pady=(8, 0))
+        
+        self.progress_canvas = tk.Canvas(progress_container, height=25, 
                                         bg=self.colors['bg_tertiary'], 
-                                        highlightthickness=0)
-        self.progress_canvas.pack(fill='x', pady=(5, 0))
+                                        highlightthickness=0,
+                                        relief='flat', bd=0)
+        self.progress_canvas.pack(fill='x', padx=1, pady=1)
         
-        # Activity log
-        log_frame = ttk.Frame(parent, style='Card.TFrame')
-        log_frame.pack(fill='both', expand=True, padx=20, pady=(20, 20))
+        # Enhanced activity log
+        log_frame = tk.Frame(parent, bg=self.colors['bg_card'])
+        log_frame.pack(fill='both', expand=True, padx=20, pady=(25, 25))
         
-        log_label = ttk.Label(log_frame, text="📝 Activity Log", 
-                             font=('Segoe UI', 14, 'bold'), 
-                             background=self.colors['bg_secondary'], 
-                             foreground=self.colors['text_primary'])
-        log_label.pack(anchor='w', pady=(0, 10))
+        # Log header
+        log_header = tk.Frame(log_frame, bg=self.colors['bg_card'])
+        log_header.pack(fill='x', pady=(0, 15))
         
-        self.log_text = scrolledtext.ScrolledText(log_frame, height=15, 
+        log_label = tk.Label(log_header, text="📝 Activity Log", 
+                            font=('Segoe UI', 16, 'bold'), 
+                            bg=self.colors['bg_card'], 
+                            fg=self.colors['accent'])
+        log_label.pack(anchor='w')
+        
+        log_hint = tk.Label(log_header, text="Real-time activity and task progress", 
+                           font=('Segoe UI', 10), 
+                           bg=self.colors['bg_card'], 
+                           fg=self.colors['text_muted'])
+        log_hint.pack(anchor='w', pady=(2, 0))
+        
+        # Enhanced log container with border
+        log_container = tk.Frame(log_frame, bg=self.colors['border'])
+        log_container.pack(fill='both', expand=True)
+        
+        self.log_text = scrolledtext.ScrolledText(log_container, height=15, 
                                                  font=('Consolas', 10), 
                                                  bg=self.colors['bg_tertiary'], 
                                                  fg=self.colors['text_primary'], 
                                                  insertbackground=self.colors['accent'], 
-                                                 relief='flat', wrap='word')
-        self.log_text.pack(fill='both', expand=True)
+                                                 relief='flat', 
+                                                 bd=0,
+                                                 wrap='word',
+                                                 selectbackground=self.colors['accent'],
+                                                 selectforeground='white')
+        self.log_text.pack(fill='both', expand=True, padx=2, pady=2)
         
-        # Add initial welcome message
-        self.add_log_entry("🚀 Shadow AI initialized and ready!", "success")
-        self.add_log_entry("💡 Try typing a command or click an example", "info")
-        self.add_log_entry("🎤 Voice input available on demand", "info")
+        # Add enhanced welcome messages
+        self.add_log_entry("🚀 Shadow AI v2.0 initialized and ready!", "success")
+        self.add_log_entry("💡 Try typing a command or click an example below", "info")
+        self.add_log_entry("🎤 Voice input loads on-demand when you click the voice button", "info")
+        self.add_log_entry("✨ Enhanced UI with modern styling and animations active", "processing")
         
     def setup_animations(self):
         """Setup animation timers and effects"""
@@ -399,24 +600,34 @@ class ModernShadowGUI:
             self.root.after(500, self.animate_typing)
         
     def update_status_indicator(self, status):
-        """Update the status indicator color and animation"""
+        """Update the enhanced status indicator with glow effects"""
         self.status_indicator.delete("all")
         
         if status == 'ready':
             color = self.colors['success']
+            glow_color = '#4caf5080'
         elif status == 'processing':
-            # Pulsing blue for processing
+            # Enhanced pulsing effect with glow
             import math
             alpha = (math.sin(self.pulse_value) + 1) / 2
-            color = self.interpolate_color(self.colors['processing'], '#ffffff', alpha * 0.3)
+            color = self.interpolate_color(self.colors['processing'], '#ffffff', alpha * 0.4)
+            glow_color = self.colors['glow']
         elif status == 'error':
             color = self.colors['error']
+            glow_color = '#f4433680'
         elif status == 'warning':
             color = self.colors['warning']
+            glow_color = '#ff980080'
         else:
             color = self.colors['text_secondary']
+            glow_color = '#78909c80'
         
-        self.status_indicator.create_oval(2, 2, 14, 14, fill=color, outline="")
+        # Draw glow effect
+        self.status_indicator.create_oval(2, 2, 18, 18, fill=glow_color, outline="")
+        # Draw main indicator
+        self.status_indicator.create_oval(4, 4, 16, 16, fill=color, outline="")
+        # Add inner highlight
+        self.status_indicator.create_oval(6, 6, 10, 10, fill='#ffffff40', outline="")
         
     def interpolate_color(self, color1, color2, factor):
         """Interpolate between two hex colors"""
@@ -433,7 +644,7 @@ class ModernShadowGUI:
         return rgb_to_hex(rgb)
         
     def update_progress(self, progress):
-        """Update the progress bar"""
+        """Update the enhanced progress bar with gradient and glow"""
         self.progress_canvas.delete("all")
         
         # Schedule update if canvas isn't ready
@@ -446,21 +657,40 @@ class ModernShadowGUI:
         height = self.progress_canvas.winfo_height()
         
         if width > 1:  # Make sure canvas is initialized
-            # Background
+            # Enhanced background with subtle gradient
             self.progress_canvas.create_rectangle(0, 0, width, height, 
-                                                fill=self.colors['bg_tertiary'], outline="")
+                                                fill=self.colors['bg_tertiary'], 
+                                                outline=self.colors['border'])
             
-            # Progress bar
+            # Progress bar with gradient effect
             progress_width = width * (progress / 100)
             if progress_width > 0:
-                self.progress_canvas.create_rectangle(0, 0, progress_width, height, 
+                # Main progress bar
+                self.progress_canvas.create_rectangle(2, 2, progress_width-2, height-2, 
                                                     fill=self.colors['accent'], outline="")
+                
+                # Add glow effect
+                if progress_width > 4:
+                    self.progress_canvas.create_rectangle(1, 1, progress_width-1, height-1, 
+                                                        fill=self.colors['glow'], outline="")
+                
+                # Add highlight
+                if progress_width > 6:
+                    self.progress_canvas.create_rectangle(3, 3, progress_width-3, height//2, 
+                                                        fill='#ffffff30', outline="")
             
-            # Progress text
+            # Enhanced progress text with shadow
+            text_color = self.colors['text_primary'] if progress < 50 else '#000000'
+            # Text shadow
+            self.progress_canvas.create_text(width//2+1, height//2+1, 
+                                           text=f"{progress:.1f}%", 
+                                           fill='#00000080', 
+                                           font=('Segoe UI', 9, 'bold'))
+            # Main text
             self.progress_canvas.create_text(width//2, height//2, 
                                            text=f"{progress:.1f}%", 
-                                           fill=self.colors['text_primary'], 
-                                           font=('Segoe UI', 9))
+                                           fill=text_color, 
+                                           font=('Segoe UI', 9, 'bold'))
         
     def add_log_entry(self, message, level="info"):
         """Add an entry to the activity log"""
@@ -688,6 +918,24 @@ class ModernShadowGUI:
             pass
         
         self.root.after(100, self.monitor_queues)
+        
+    def button_hover(self, button, is_entering):
+        """Add hover effects to buttons"""
+        if button == self.execute_btn:
+            if is_entering:
+                button.config(bg=self.colors['accent_hover'])
+            else:
+                button.config(bg=self.colors['accent'])
+        elif button == self.voice_btn:
+            if is_entering:
+                button.config(bg=self.colors['accent_secondary'] if not self.voice_mode else self.colors['accent_hover'])
+            else:
+                button.config(bg=self.colors['accent'] if self.voice_mode else self.colors['bg_tertiary'])
+        elif button == self.clear_btn:
+            if is_entering:
+                button.config(bg=self.colors['error'])
+            else:
+                button.config(bg=self.colors['bg_tertiary'])
         
     def run(self):
         """Start the GUI application"""

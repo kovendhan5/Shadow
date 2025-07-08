@@ -69,6 +69,7 @@ class UniversalExecutor:
             "open_notepad_and_type": self._open_notepad_and_type,
             "open_notepad_and_write_article": self._open_notepad_and_write_article,
             "type_text": self._type_text,
+            "type_content": self._type_content,  # Added missing handler
             "click_at": self._click_at,
             "take_screenshot": self._take_screenshot,
             "open_application": self._open_application,
@@ -329,9 +330,20 @@ class UniversalExecutor:
     def _is_application_available(self, app_name: str) -> bool:
         """Check if an application is available"""
         try:
-            subprocess.run([app_name], capture_output=True, timeout=1)
-            return True
+            # For notepad, check if it exists in Windows
+            if app_name == "notepad.exe":
+                # Use where command to check if notepad exists
+                result = subprocess.run(["where", "notepad"], capture_output=True, timeout=5)
+                return result.returncode == 0
+            
+            # For other apps, try to check using where command
+            app_base = app_name.replace(".exe", "")
+            result = subprocess.run(["where", app_base], capture_output=True, timeout=5)
+            return result.returncode == 0
         except:
+            # Fallback - assume common Windows apps are available
+            if app_name in ["notepad.exe", "calc.exe", "mspaint.exe"]:
+                return True
             return False
 
     def _get_user_confirmation(self, task: UniversalTask) -> bool:
@@ -438,6 +450,31 @@ Do you want to proceed with this task?
                 return {"success": False, "error": "No text provided to type"}
         except Exception as e:
             return {"success": False, "error": f"Failed to type text: {str(e)}"}
+
+    def _type_content(self, step: TaskStep, context: Dict[str, Any] = None) -> Dict[str, Any]:
+        """Type content (supports template replacement from context)"""
+        try:
+            text = step.parameters.get("text", "")
+            
+            # Handle template replacement
+            if "{{generated_content}}" in text and context:
+                generated_content = context.get("generated_content", "")
+                text = text.replace("{{generated_content}}", generated_content)
+            
+            # Handle other template variables
+            if "{{" in text and context:
+                for key, value in context.items():
+                    text = text.replace(f"{{{{{key}}}}}", str(value))
+            
+            if text:
+                # Add a small delay to ensure the target application is ready
+                time.sleep(0.5)
+                pyautogui.typewrite(text, interval=0.01)  # Slightly slower typing
+                return {"success": True, "message": f"Content typed: {text[:100]}..."}
+            else:
+                return {"success": False, "error": "No content provided to type"}
+        except Exception as e:
+            return {"success": False, "error": f"Failed to type content: {str(e)}"}
 
     def _click_at(self, step: TaskStep, context: Dict[str, Any] = None) -> Dict[str, Any]:
         """Click at specific coordinates"""
@@ -797,11 +834,41 @@ Do you want to proceed with this task?
     # Universal Fallback Handler
     def _execute_universal(self, step: TaskStep, context: Dict[str, Any] = None) -> Dict[str, Any]:
         """Universal fallback handler for unknown actions"""
-        return {
-            "success": False,
-            "error": f"Unknown action: {step.action}",
-            "message": "This action is not yet implemented in the universal executor"
-        }
+        action = step.action
+        
+        # Try to map unknown actions to known ones
+        if "type" in action.lower():
+            # Map any typing action to type_content
+            return self._type_content(step, context)
+        elif "click" in action.lower():
+            return self._click_at(step, context)
+        elif "open" in action.lower():
+            if "notepad" in action.lower() or "text" in action.lower():
+                return self._open_notepad(step, context)
+            elif "browser" in action.lower():
+                return self._open_browser(step, context)
+            else:
+                return self._open_application(step, context)
+        elif "create" in action.lower():
+            if "document" in action.lower() or "article" in action.lower():
+                return self._create_document(step, context)
+            else:
+                return self._create_content(step, context)
+        elif "save" in action.lower():
+            return self._save_file(step, context)
+        elif "generate" in action.lower():
+            return self._generate_article_content(step, context)
+        else:
+            # Try to execute as system command
+            try:
+                logging.warning(f"Unknown action '{action}', attempting system execution")
+                return self._run_command(step, context)
+            except:
+                return {
+                    "success": False,
+                    "error": f"Unknown action: {action}",
+                    "message": f"Action '{action}' is not implemented. Available actions: {list(self.action_handlers.keys())}"
+                }
 
     # Helper Methods
     def _generate_article_about_topic(self, topic: str, length: str = "medium") -> str:

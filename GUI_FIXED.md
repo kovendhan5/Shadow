@@ -9,6 +9,7 @@ The GUI was hanging during startup because the voice input module was trying to 
 Your Shadow AI now has a stunning, professional interface with:
 
 ### **Visual Features**
+
 - 🌟 **Dark Theme** - Easy on the eyes
 - ✨ **Smooth Animations** - Pulsing status indicators
 - 📊 **Progress Bars** - Real-time task visualization
@@ -16,6 +17,7 @@ Your Shadow AI now has a stunning, professional interface with:
 - 🎨 **Color Coding** - Green (success), Blue (processing), Red (errors)
 
 ### **Interactive Elements**
+
 - 💬 **Large Text Input** - Type commands naturally
 - 🎤 **Voice Button** - Voice input when you click it
 - 💡 **Example Commands** - Double-click to try them
@@ -25,16 +27,19 @@ Your Shadow AI now has a stunning, professional interface with:
 ## 🚀 **How to Launch**
 
 ### **Method 1: Beautiful Launcher**
+
 ```bash
 launch_gui_modern.bat
 ```
 
 ### **Method 2: Direct Python**
+
 ```bash
 python gui_modern.py
 ```
 
 ### **Method 3: Test Version**
+
 ```bash
 python test_fixed_gui.py
 ```
@@ -42,16 +47,19 @@ python test_fixed_gui.py
 ## 🎯 **How to Use**
 
 ### **Text Commands**
+
 1. Type in the command box: "Write an article about AI"
 2. Click ✨ **Execute**
 3. Watch the beautiful animations!
 
 ### **Example Commands**
+
 1. Double-click any example in the left panel
 2. Command auto-fills in the input box
 3. Click ✨ **Execute** to run it
 
-### **Voice Commands** 
+### **Voice Commands**
+
 1. Click 🎤 **Voice** button
 2. Speak your command when ready
 3. GUI will transcribe and execute
