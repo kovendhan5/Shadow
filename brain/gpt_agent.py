@@ -24,12 +24,12 @@ class GPTAgent:
     def setup_client(self):
         """Setup the appropriate LLM client based on provider"""
         if self.provider == "openai":
-            if not OPENAI_API_KEY or OPENAI_API_KEY == "test_key_not_real":
-                raise ValueError("OpenAI API key not found or is a test key. Please set OPENAI_API_KEY in .env file")
+            if not OPENAI_API_KEY or OPENAI_API_KEY == "test_key_not_real" or OPENAI_API_KEY == "your_openai_key_here":
+                raise ValueError("OpenAI API key not found or is a placeholder. Please set OPENAI_API_KEY in .env file")
             openai.api_key = OPENAI_API_KEY
         elif self.provider == "gemini":
-            if not GEMINI_API_KEY or GEMINI_API_KEY == "test_key_not_real":
-                raise ValueError("Gemini API key not found or is a test key. Please set GEMINI_API_KEY in .env file")
+            if not GEMINI_API_KEY or GEMINI_API_KEY == "test_key_not_real" or GEMINI_API_KEY == "your_gemini_key_here":
+                raise ValueError("Gemini API key not found or is a placeholder. Please set GEMINI_API_KEY in .env file")
             genai.configure(api_key=GEMINI_API_KEY)
         elif self.provider == "ollama":
             # Test connection to Ollama
@@ -207,10 +207,10 @@ def _fallback_command_parsing(command: str) -> Dict[str, Any]:
         topic = command_lower.split("write an article about")[1].strip()
         return {
             "task_type": "desktop_control",
-            "action": "write_article_to_active_window",
+            "action": "open_notepad_and_write_article",
             "parameters": {"topic": topic},
             "confirmation_required": False,
-            "description": f"Write an article about {topic} in the active window"
+            "description": f"Open Notepad and write an article about {topic}"
         }
     elif "take a screenshot" in command_lower:
         return {

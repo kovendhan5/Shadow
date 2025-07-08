@@ -4,6 +4,7 @@ import sys
 import os
 import argparse
 import time
+import traceback
 import pyautogui
 from typing import Dict, Any
 from datetime import datetime
@@ -12,6 +13,8 @@ from datetime import datetime
 from utils.logging import setup_logging
 from utils.confirm import confirm_action, confirm_sensitive_action
 from brain.gpt_agent import process_command
+from brain.universal_processor import process_universal_command
+from brain.universal_executor import execute_universal_task
 from control.desktop import desktop_controller
 from control.browser import get_browser_controller, close_browser
 from control.documents import document_controller
@@ -33,23 +36,31 @@ class ShadowAI:
         # Welcome message
         welcome_msg = """
         ┌─────────────────────────────────────────────────────────────┐
-        │                    🧠 Shadow AI Agent                       │
-        │                Your Personal AI Assistant                   │
+        │              🧠 Shadow AI Universal Assistant                │
+        │           Your Intelligent Computer Companion               │
         │                                                             │
-        │  Available commands:                                        │
-        │  • Voice: Say your command naturally                       │
-        │  • Text: Type your command                                  │
-        │  • Examples:                                                │
-        │    - "Open notepad and type hello world"                   │
-        │    - "Write a leave letter for tomorrow"                   │
-        │    - "Search for iPhone on Flipkart"                       │
-        │    - "Take a screenshot"                                    │
+        │  🌟 NEW: Universal Command Processing                       │
+        │  I can now understand and execute ANY computer task!        │
         │                                                             │
-        │  Commands: help, quit, voice, text, demo                   │
+        │  Examples of what I can do:                                 │
+        │  • "Write an article about artificial intelligence"         │
+        │  • "Create a leave letter for tomorrow"                     │
+        │  • "Search for iPhone on Flipkart and compare prices"       │
+        │  • "Open PowerPoint and create a presentation"             │
+        │  • "Find all PDF files in Downloads and organize them"      │
+        │  • "Send an email to my team about the project update"      │
+        │  • "Create a backup of my important documents"              │
+        │  • "Set up a meeting reminder for 3 PM"                     │
+        │                                                             │
+        │  🎯 I understand context and can execute complex workflows  │
+        │  🔐 I prioritize security and ask for confirmation          │
+        │  🧠 I learn from your preferences and improve over time     │
+        │                                                             │
+        │  Commands: help, quit, voice, text, demo, status           │
         └─────────────────────────────────────────────────────────────┘
         """
         print(welcome_msg)
-        speak_response("Shadow AI is ready. How can I help you today?")
+        speak_response("Shadow AI Universal Assistant is ready. I can help you with any computer task. What would you like me to do?")
     
     def run_interactive(self):
         """Run Shadow AI in interactive mode"""
@@ -118,8 +129,9 @@ class ShadowAI:
     def show_help(self):
         """Show help information"""
         help_text = """
-        🧠 Shadow AI Agent - Help
+        🧠 Shadow AI Universal Assistant - Help
         
+        ═══════════════════════════════════════════════════════════
         BASIC COMMANDS:
         • help - Show this help message
         • quit/exit - Exit the program
@@ -128,33 +140,71 @@ class ShadowAI:
         • demo - Run a demonstration
         • status - Show current status
         
-        EXAMPLE TASKS:
-        • "Open notepad" - Opens Notepad application
-        • "Type: Hello World" - Types the specified text
-        • "Write a leave letter" - Generates and creates a leave letter
-        • "Search for iPhone on Flipkart" - Opens Flipkart and searches
-        • "Take a screenshot" - Captures screen and saves to desktop
-        • "Open calculator" - Opens Calculator app
-        • "Create a resume template" - Generates a resume template
+        ═══════════════════════════════════════════════════════════
+        🌟 UNIVERSAL CAPABILITIES:
         
-        DOCUMENT TASKS:
-        • "Write a document about [topic]"
-        • "Create a leave letter for [date] due to [reason]"
+        I can understand and execute ANY computer task you describe
+        in natural language. Just tell me what you want to do!
+        
+        DOCUMENT & CONTENT CREATION:
+        • "Write an article about [topic]"
+        • "Create a professional email about [subject]"
+        • "Draft a business proposal for [project]"
         • "Generate a resume template"
-        • "Save this as PDF"
+        • "Write a leave letter for [date] due to [reason]"
+        • "Create meeting notes from yesterday's discussion"
         
-        BROWSER TASKS:
-        • "Search for [product] on [website]"
-        • "Open [website]"
-        • "Buy [product] on Flipkart"
-        • "Open Gmail"
+        WEB & RESEARCH TASKS:
+        • "Search for the best laptops under $1000"
+        • "Find flight prices from New York to London"
+        • "Research the latest news about [topic]"
+        • "Compare prices for [product] on different websites"
+        • "Download the latest updates for [software]"
         
-        DESKTOP TASKS:
-        • "Open [application]"
-        • "Click at [x], [y]"
-        • "Type [text]"
-        • "Press [key]"
-        • "Take screenshot"
+        FILE & SYSTEM MANAGEMENT:
+        • "Organize my Downloads folder by file type"
+        • "Find all photos from last month and create a folder"
+        • "Backup my Documents folder to [location]"
+        • "Delete temporary files to free up space"
+        • "Create a folder structure for my new project"
+        
+        COMMUNICATION & PRODUCTIVITY:
+        • "Send an email to [contact] about [subject]"
+        • "Schedule a meeting reminder for [time]"
+        • "Create a to-do list for today's tasks"
+        • "Set up a calendar event for [event]"
+        • "Draft a message to my team about [topic]"
+        
+        AUTOMATION & WORKFLOWS:
+        • "Create a morning routine that opens my work apps"
+        • "Set up automatic file organization"
+        • "Create a backup schedule for important files"
+        • "Automate my daily report generation"
+        
+        CREATIVE & DESIGN:
+        • "Create a presentation about [topic]"
+        • "Design a simple logo for my business"
+        • "Generate ideas for [project]"
+        • "Create a social media post about [event]"
+        
+        ═══════════════════════════════════════════════════════════
+        🎯 HOW IT WORKS:
+        
+        1. Tell me what you want to do in natural language
+        2. I'll understand your intent and break it into steps
+        3. I'll show you what I plan to do and ask for confirmation
+        4. I'll execute the task step by step
+        5. I'll provide feedback on the results
+        
+        🔐 SECURITY: I always ask for permission before:
+        • Accessing sensitive information
+        • Making purchases or financial transactions
+        • Deleting or modifying important files
+        • Sending emails or messages
+        
+        💡 TIP: Be as specific as possible for better results!
+        Instead of "help with work", try "create a project timeline 
+        in Excel for the Q1 marketing campaign"
         """
         print(help_text)
         speak_response("Help information displayed. Is there anything specific you'd like to know?")
@@ -208,33 +258,60 @@ class ShadowAI:
             speak_response("I encountered an error during the demonstration, but I'm still ready to help with your tasks.")
     
     def process_ai_command(self, command: str):
-        """Process AI command using GPT agent"""
+        """Process AI command using Universal Processor and Executor"""
         try:
-            logging.info(f"Processing AI command: {command}")
+            logging.info(f"Processing universal command: {command}")
             
-            # Get action data from GPT agent
-            action_data = process_command(command)
+            # Use Universal Processor to understand the command
+            task = process_universal_command(command)
             
-            if not action_data:
+            if not task:
                 speak_response("I couldn't understand that command. Please try again.")
                 return
             
-            # Execute the action
-            success = self.execute_action(action_data)
+            # Show task summary to user
+            print(f"\n🎯 Task: {task.description}")
+            print(f"📊 Complexity: {task.complexity.value}")
+            print(f"⚡ Estimated time: {task.estimated_duration} seconds")
+            print(f"🔒 Risk level: {task.risk_level}")
+            print(f"📝 Steps: {len(task.steps)}")
             
-            if success:
-                response = f"✅ Task completed: {action_data.get('description', 'Unknown task')}"
+            # Execute the task using Universal Executor
+            result = execute_universal_task(task)
+            
+            if result.success:
+                response = f"✅ Task completed successfully in {result.execution_time:.1f} seconds"
+                if result.warnings:
+                    response += f" (with {len(result.warnings)} warnings)"
                 logging.info(response)
                 print(response)
                 speak_response("Task completed successfully!")
+                
+                # Show any warnings
+                if result.warnings:
+                    print("\n⚠️ Warnings:")
+                    for warning in result.warnings:
+                        print(f"  • {warning}")
             else:
-                response = f"❌ Task failed: {action_data.get('description', 'Unknown task')}"
+                response = f"❌ Task failed: {result.error_message or 'Unknown error'}"
                 logging.error(response)
                 print(response)
                 speak_response("I encountered an error while performing that task.")
+                
+                # Show failed steps
+                if result.step_results:
+                    print("\n📋 Step Results:")
+                    for step_result in result.step_results:
+                        status = "✅" if step_result.get("success", False) else "❌"
+                        step_num = step_result.get("step_number", "?")
+                        action = step_result.get("action", "unknown")
+                        print(f"  {status} Step {step_num}: {action}")
+                        if not step_result.get("success", False) and step_result.get("error"):
+                            print(f"      Error: {step_result['error']}")
         
         except Exception as e:
-            logging.error(f"Error processing AI command: {e}")
+            logging.error(f"Error processing universal command: {e}")
+            logging.error(traceback.format_exc())
             speak_response("I encountered an error while processing your command.")
     
     def execute_action(self, action_data: Dict[str, Any]) -> bool:
@@ -281,6 +358,15 @@ class ShadowAI:
                     time.sleep(1.5)  # Wait for notepad to be ready
                     text = parameters.get('text', '')
                     return desktop_controller.type_text(text)
+                return False
+            elif action == 'open_notepad_and_write_article':
+                # Open notepad first, then write article
+                success = desktop_controller.open_notepad()
+                if success:
+                    time.sleep(2)  # Wait for notepad to fully open
+                    topic = parameters.get('topic', 'AI')
+                    article_content = self.generate_article_content(topic)
+                    return desktop_controller.type_text(article_content)
                 return False
             elif action == 'write_article_to_active_window':
                 # Write article to the currently active window
