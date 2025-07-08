@@ -257,6 +257,10 @@ class ShadowAI:
             logging.error(f"Error in demo: {e}")
             speak_response("I encountered an error during the demonstration, but I'm still ready to help with your tasks.")
     
+    def process_command(self, command: str):
+        """Public interface for command processing (for API/test compatibility)"""
+        return self.process_ai_command(command)
+    
     def process_ai_command(self, command: str):
         """Process AI command using Universal Processor and Executor"""
         try:
@@ -267,7 +271,11 @@ class ShadowAI:
             
             if not task:
                 speak_response("I couldn't understand that command. Please try again.")
-                return
+                return {
+                    "success": False,
+                    "message": "Could not understand command",
+                    "error": "Command parsing failed"
+                }
             
             # Show task summary to user
             print(f"\n🎯 Task: {task.description}")
@@ -292,6 +300,14 @@ class ShadowAI:
                     print("\n⚠️ Warnings:")
                     for warning in result.warnings:
                         print(f"  • {warning}")
+                
+                return {
+                    "success": True,
+                    "message": response,
+                    "task_result": result,
+                    "execution_time": result.execution_time,
+                    "warnings": result.warnings
+                }
             else:
                 response = f"❌ Task failed: {result.error_message or 'Unknown error'}"
                 logging.error(response)
@@ -308,11 +324,23 @@ class ShadowAI:
                         print(f"  {status} Step {step_num}: {action}")
                         if not step_result.get("success", False) and step_result.get("error"):
                             print(f"      Error: {step_result['error']}")
+                
+                return {
+                    "success": False,
+                    "message": response,
+                    "task_result": result,
+                    "error": result.error_message
+                }
         
         except Exception as e:
             logging.error(f"Error processing universal command: {e}")
             logging.error(traceback.format_exc())
             speak_response("I encountered an error while processing your command.")
+            return {
+                "success": False,
+                "message": f"Error processing command: {str(e)}",
+                "error": str(e)
+            }
     
     def execute_action(self, action_data: Dict[str, Any]) -> bool:
         """Execute the action based on action data"""

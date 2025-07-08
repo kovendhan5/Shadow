@@ -14,6 +14,7 @@ class GPTAgent:
         self.provider = provider
         self.model = DEFAULT_MODEL.get(provider, "gpt-4")
         self.client_available = False
+        self.openai_client = None
         try:
             self.setup_client()
             self.client_available = True
@@ -26,7 +27,7 @@ class GPTAgent:
         if self.provider == "openai":
             if not OPENAI_API_KEY or OPENAI_API_KEY == "test_key_not_real" or OPENAI_API_KEY == "your_openai_key_here":
                 raise ValueError("OpenAI API key not found or is a placeholder. Please set OPENAI_API_KEY in .env file")
-            openai.api_key = OPENAI_API_KEY
+            self.openai_client = openai.OpenAI(api_key=OPENAI_API_KEY)
         elif self.provider == "gemini":
             if not GEMINI_API_KEY or GEMINI_API_KEY == "test_key_not_real" or GEMINI_API_KEY == "your_gemini_key_here":
                 raise ValueError("Gemini API key not found or is a placeholder. Please set GEMINI_API_KEY in .env file")
@@ -66,7 +67,7 @@ class GPTAgent:
             messages.append({"role": "system", "content": system_prompt})
         messages.append({"role": "user", "content": prompt})
         
-        response = openai.ChatCompletion.create(
+        response = self.openai_client.chat.completions.create(
             model=self.model,
             messages=messages,
             max_tokens=1500,

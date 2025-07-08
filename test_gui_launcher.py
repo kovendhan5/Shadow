@@ -119,33 +119,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-        print("❌ Dependency check failed. Please install required modules.")
-        return
-    
-    # Check .env file
-    env_path = os.path.join(os.path.dirname(__file__), '.env')
-    if not os.path.exists(env_path):
-        print("⚠️  Warning: .env file not found. Please create it with your API keys.")
-        print("   You can copy .env.template to .env and fill in your keys.")
-    
-    try:
-        # Import and run the modern GUI
-        from gui_modern import ModernShadowGUI
-        
-        print("✅ Dependencies loaded successfully")
-        print("🚀 Starting Shadow AI Modern GUI...")
-        print("📱 The GUI window should open shortly...")
-        
-        # Create and run the GUI
-        app = ModernShadowGUI()
-        app.run()
-        
-    except ImportError as e:
-        print(f"❌ Import error: {e}")
-        print("Please ensure all Shadow AI modules are available.")
-    except Exception as e:
-        print(f"❌ Error starting GUI: {e}")
-        logging.error(f"GUI startup error: {e}")
-
-if __name__ == "__main__":
-    main()

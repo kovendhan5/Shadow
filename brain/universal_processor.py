@@ -80,7 +80,7 @@ class UniversalProcessor:
         """Initialize AI capabilities"""
         if GEMINI_API_KEY and GEMINI_API_KEY != "your_gemini_key_here":
             genai.configure(api_key=GEMINI_API_KEY)
-            self.ai_model = genai.GenerativeModel('gemini-pro')
+            self.ai_model = genai.GenerativeModel('gemini-1.5-flash')
             self.ai_available = True
             logging.info("Universal Processor AI enabled")
         else:
@@ -261,55 +261,94 @@ IMPORTANT: Always provide safe, practical steps that respect user privacy and sy
             return self._create_default_task(command, analysis)
 
     def _create_article_task(self, command: str, analysis: Dict[str, Any]) -> UniversalTask:
-        """Create task for article writing"""
+        """Create task for article writing with file saving"""
         
         # Extract topic
-        topic = "general topic"
+        topic = "AI"  # Default to AI topic
         if "about" in command.lower():
             topic_match = re.search(r"about\s+(.+?)(?:\s+in|\s+for|\s+on|$)", command.lower())
             if topic_match:
                 topic = topic_match.group(1).strip()
         
-        steps = [
-            TaskStep(
-                step_number=1,
-                action="open_notepad",
-                application="notepad",
-                parameters={},
-                expected_result="Notepad opens successfully",
-                error_handling="Try alternative text editor if Notepad fails"
-            ),
-            TaskStep(
-                step_number=2,
-                action="generate_article_content",
-                application="ai_generator",
-                parameters={"topic": topic, "length": "medium"},
-                expected_result="Article content generated",
-                error_handling="Use template if AI generation fails"
-            ),
-            TaskStep(
-                step_number=3,
-                action="type_content",
-                application="notepad",
-                parameters={"text": "{{generated_content}}"},
-                expected_result="Content typed into Notepad",
-                error_handling="Retry typing if interrupted"
-            )
-        ]
+        # Extract filename
+        filename = "new.txt"  # Default filename
+        if "name it" in command.lower() or "save as" in command.lower():
+            filename_match = re.search(r"(?:name it|save as)\s+([^\s]+(?:\.[a-zA-Z]+)?)", command.lower())
+            if filename_match:
+                filename = filename_match.group(1).strip()
         
-        return UniversalTask(
-            task_id=f"article_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
-            original_command=command,
-            category=TaskCategory.DOCUMENT,
-            complexity=TaskComplexity.MODERATE,
-            description=f"Create an article about {topic}",
-            steps=steps,
-            estimated_duration=120,
-            risk_level="low",
-            requires_user_confirmation=False,
-            context_requirements=["text_editor_available"],
-            success_criteria="Article content displayed in text editor"
-        )
+        # Check if it's the complex notepad task (open + create + name + write)
+        is_complex_task = all(keyword in command.lower() for keyword in ["open", "notepad", "create", "file", "write"])
+        
+        if is_complex_task:
+            # Use the comprehensive notepad handler
+            steps = [
+                TaskStep(
+                    step_number=1,
+                    action="open_notepad_create_file_write_article",
+                    application="notepad",
+                    parameters={"topic": topic, "filename": filename},
+                    expected_result=f"Notepad opened, article written, and saved as {filename}",
+                    error_handling="Retry with simplified approach if fails",
+                    timeout_seconds=60
+                )
+            ]
+            
+            return UniversalTask(
+                task_id=f"notepad_complete_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
+                original_command=command,
+                category=TaskCategory.DOCUMENT,
+                complexity=TaskComplexity.COMPLEX,
+                description=f"Open Notepad, create and save {filename} with {topic} article",
+                steps=steps,
+                estimated_duration=30,
+                risk_level="low",
+                requires_user_confirmation=False,
+                context_requirements=["notepad_available"],
+                success_criteria=f"File {filename} created with article content"
+            )
+        else:
+            # Standard article creation
+            steps = [
+                TaskStep(
+                    step_number=1,
+                    action="open_notepad",
+                    application="notepad",
+                    parameters={},
+                    expected_result="Notepad opens successfully",
+                    error_handling="Try alternative text editor if Notepad fails"
+                ),
+                TaskStep(
+                    step_number=2,
+                    action="generate_article_content",
+                    application="ai_generator",
+                    parameters={"topic": topic, "length": "medium"},
+                    expected_result="Article content generated",
+                    error_handling="Use template if AI generation fails"
+                ),
+                TaskStep(
+                    step_number=3,
+                    action="type_content",
+                    application="notepad",
+                    parameters={"text": "{{generated_content}}"},
+                    expected_result="Content typed into Notepad",
+                    error_handling="Retry typing if interrupted"
+                )
+            ]
+            
+            return UniversalTask(
+                task_id=f"article_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
+                original_command=command,
+                category=TaskCategory.DOCUMENT,
+                complexity=TaskComplexity.MODERATE,
+                description=f"Create an article about {topic}",
+                steps=steps,
+                estimated_duration=120,
+                risk_level="low",
+                requires_user_confirmation=False,
+                context_requirements=["text_editor_available"],
+                success_criteria="Article content displayed in text editor"
+            )
 
     def _extract_intent_keywords(self, command: str) -> List[str]:
         """Extract keywords that indicate user intent"""

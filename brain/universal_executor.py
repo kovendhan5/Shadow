@@ -68,6 +68,7 @@ class UniversalExecutor:
             "open_text_editor": self._open_text_editor,
             "open_notepad_and_type": self._open_notepad_and_type,
             "open_notepad_and_write_article": self._open_notepad_and_write_article,
+            "open_notepad_create_file_write_article": self._open_notepad_create_file_write_article,
             "type_text": self._type_text,
             "type_content": self._type_content,  # Added missing handler
             "click_at": self._click_at,
@@ -423,21 +424,168 @@ Do you want to proceed with this task?
                 return result
             
             # Generate article content
-            topic = step.parameters.get("topic", "general topic")
+            topic = step.parameters.get("topic", "AI")
+            filename = step.parameters.get("filename", "new.txt")
             article_content = self._generate_article_about_topic(topic)
             
+            # Wait for notepad to be ready
+            time.sleep(2)
+            
             # Type the article
+            pyautogui.typewrite(article_content, interval=0.01)
+            
+            # Save the file with the specified name
             time.sleep(1)
-            pyautogui.typewrite(article_content)
+            
+            # Use Ctrl+S to save
+            pyautogui.hotkey('ctrl', 's')
+            time.sleep(1)
+            
+            # Type the filename
+            pyautogui.typewrite(filename, interval=0.05)
+            time.sleep(0.5)
+            
+            # Press Enter to save
+            pyautogui.press('enter')
+            time.sleep(1)
             
             return {
                 "success": True, 
-                "message": f"Article about {topic} written in Notepad",
-                "content_length": len(article_content)
+                "message": f"Article about {topic} written and saved as {filename}",
+                "content_length": len(article_content),
+                "filename": filename
             }
             
         except Exception as e:
             return {"success": False, "error": f"Failed to write article: {str(e)}"}
+
+    def _open_notepad_create_file_write_article(self, step: TaskStep, context: Dict[str, Any] = None) -> Dict[str, Any]:
+        """Complete notepad task: open notepad, create file, name it, write article about AI"""
+        try:
+            # Extract parameters
+            filename = step.parameters.get("filename", "new.txt")
+            topic = step.parameters.get("topic", "AI")
+            
+            logging.info(f"Starting complete notepad task: create {filename} with {topic} article")
+            
+            # Step 1: Open notepad
+            subprocess.Popen(["notepad.exe"])
+            time.sleep(3)  # Wait for notepad to fully load
+            
+            # Step 2: Generate and type the article content
+            article_content = self._generate_comprehensive_ai_article()
+            
+            logging.info(f"Typing article content ({len(article_content)} characters)")
+            pyautogui.typewrite(article_content, interval=0.01)
+            
+            # Step 3: Save the file with specified name
+            time.sleep(1)
+            logging.info(f"Saving file as {filename}")
+            
+            # Use Ctrl+S to open save dialog
+            pyautogui.hotkey('ctrl', 's')
+            time.sleep(2)  # Wait for save dialog
+            
+            # Type the filename (clear any existing text first)
+            pyautogui.hotkey('ctrl', 'a')  # Select all text in filename field
+            time.sleep(0.5)
+            pyautogui.typewrite(filename, interval=0.05)
+            time.sleep(1)
+            
+            # Press Enter to save
+            pyautogui.press('enter')
+            time.sleep(2)  # Wait for save to complete
+            
+            return {
+                "success": True,
+                "message": f"Successfully created {filename} with AI article ({len(article_content)} characters)",
+                "filename": filename,
+                "topic": topic,
+                "content_length": len(article_content)
+            }
+            
+        except Exception as e:
+            logging.error(f"Error in complete notepad task: {e}")
+            return {"success": False, "error": f"Failed to complete notepad task: {str(e)}"}
+
+    def _generate_comprehensive_ai_article(self) -> str:
+        """Generate a comprehensive article about AI"""
+        article = """Understanding Artificial Intelligence: A Comprehensive Guide
+
+Introduction
+Artificial Intelligence (AI) has emerged as one of the most transformative technologies of the 21st century. From science fiction concepts to practical applications that enhance our daily lives, AI represents a paradigm shift in how we approach problem-solving and automation.
+
+What is Artificial Intelligence?
+Artificial Intelligence refers to the simulation of human intelligence in machines that are programmed to think and learn like humans. These systems can perform tasks that typically require human intelligence, such as visual perception, speech recognition, decision-making, and language translation.
+
+Types of AI
+AI can be broadly categorized into several types:
+
+1. Narrow AI (Weak AI): Designed to perform specific tasks, such as voice assistants, recommendation systems, and image recognition software.
+
+2. General AI (Strong AI): Hypothetical AI that would possess the ability to understand, learn, and apply intelligence across a wide range of tasks, similar to human cognitive abilities.
+
+3. Superintelligent AI: A theoretical form of AI that would surpass human intelligence in all aspects.
+
+Key Components of AI Systems
+- Machine Learning: Algorithms that enable systems to learn from data without explicit programming
+- Natural Language Processing: The ability to understand and generate human language
+- Computer Vision: The capability to interpret and analyze visual information
+- Neural Networks: Computing systems inspired by biological neural networks
+- Deep Learning: Advanced machine learning using multi-layered neural networks
+
+Current Applications
+AI is already integrated into numerous aspects of modern life:
+- Healthcare: Disease diagnosis, drug discovery, and personalized treatment plans
+- Transportation: Autonomous vehicles and traffic optimization
+- Finance: Fraud detection, algorithmic trading, and risk assessment
+- Entertainment: Content recommendation and game AI
+- Education: Personalized learning platforms and intelligent tutoring systems
+
+Benefits and Advantages
+- Increased efficiency and productivity
+- Enhanced decision-making capabilities
+- Automation of repetitive tasks
+- 24/7 availability without fatigue
+- Processing vast amounts of data quickly
+- Improved accuracy in various applications
+
+Challenges and Concerns
+- Job displacement and economic impact
+- Privacy and data security issues
+- Ethical considerations and bias in AI systems
+- Need for regulation and governance
+- Technical limitations and reliability concerns
+- The potential for misuse or malicious applications
+
+Future Prospects
+The future of AI holds immense promise. We can expect continued advancement in:
+- More sophisticated natural language understanding
+- Improved human-AI collaboration
+- Enhanced AI safety and reliability
+- Broader integration across industries
+- Development of more energy-efficient AI systems
+- Progress toward artificial general intelligence
+
+Ethical Considerations
+As AI becomes more prevalent, it's crucial to address ethical concerns:
+- Ensuring fairness and avoiding discrimination
+- Maintaining transparency in AI decision-making
+- Protecting user privacy and data rights
+- Establishing accountability for AI actions
+- Promoting beneficial AI development
+
+Conclusion
+Artificial Intelligence represents both an incredible opportunity and a significant responsibility. As we continue to develop and deploy AI systems, it's essential to balance innovation with ethical considerations, ensuring that AI serves humanity's best interests while addressing potential risks and challenges.
+
+The journey of AI is just beginning, and its impact on society will depend on how thoughtfully we approach its development and implementation. By fostering responsible AI research and deployment, we can harness its power to create a better future for all.
+
+---
+Article generated by Shadow AI
+Date: """ + datetime.now().strftime("%Y-%m-%d %H:%M:%S") + """
+Word count: Approximately 500 words
+"""
+        return article
 
     def _type_text(self, step: TaskStep, context: Dict[str, Any] = None) -> Dict[str, Any]:
         """Type text at current cursor position"""
@@ -844,7 +992,12 @@ Do you want to proceed with this task?
             return self._click_at(step, context)
         elif "open" in action.lower():
             if "notepad" in action.lower() or "text" in action.lower():
-                return self._open_notepad(step, context)
+                # Check if it's the complex notepad task
+                if ("create" in action.lower() and "file" in action.lower() and 
+                    ("article" in action.lower() or "write" in action.lower())):
+                    return self._open_notepad_create_file_write_article(step, context)
+                else:
+                    return self._open_notepad(step, context)
             elif "browser" in action.lower():
                 return self._open_browser(step, context)
             else:

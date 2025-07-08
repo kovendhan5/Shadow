@@ -62,7 +62,7 @@ class TestGPTAgent:
         with patch('google.generativeai.configure'):
             agent = GPTAgent(provider='gemini')
             assert agent.provider == 'gemini'
-            assert agent.model == 'gemini-pro'
+            assert agent.model == 'gemini-1.5-flash'
 
 class TestDesktopController:
     """Test Desktop Controller functionality"""
