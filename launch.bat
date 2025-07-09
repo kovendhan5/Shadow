@@ -17,30 +17,39 @@ echo.
 set /p choice="Enter your choice (1-7): "
 
 if "%choice%"=="1" (
-    echo Starting Shadow AI in Interactive Mode...
-    python main.py
+    echo Launching GUI selector...
+    python gui\gui_modern.py
 ) else if "%choice%"=="2" (
-    echo Starting Shadow AI in Voice Mode...
-    python main.py --voice
+    echo Starting command line interface...
+    python main.py --cli
 ) else if "%choice%"=="3" (
-    echo Running Demo...
-    python main.py --demo
+    echo Starting voice-enabled mode...
+    python main.py --voice
 ) else if "%choice%"=="4" (
-    echo Running Tests...
-    python -m pytest test_shadow.py -v
+    echo Launching Working GUI...
+    python gui\gui_working.py
 ) else if "%choice%"=="5" (
-    echo Starting Web Interface...
-    python web_interface.py
+    echo Launching Orpheus Emotional AI...
+    python gui\gui_orpheus.py
 ) else if "%choice%"=="6" (
-    echo Starting GUI...
-    python gui.py
+    echo Launching Enhanced GUI...
+    python gui\gui_enhanced.py
 ) else if "%choice%"=="7" (
-    echo Goodbye!
-    exit
+    echo Opening configuration...
+    notepad .env
+) else if "%choice%"=="8" (
+    echo Opening documentation...
+    explorer docs
+) else if "%choice%"=="9" (
+    echo Running tests...
+    python tests\test_gpt_agent.py
+) else if "%choice%"=="0" (
+    echo Goodbye! 👋
+    exit /b 0
 ) else (
     echo Invalid choice. Please try again.
     pause
-    goto :start
+    goto :eof
 )
 
 pause

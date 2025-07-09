@@ -18,13 +18,22 @@ import logging
 from pathlib import Path
 
 # Import Shadow AI components with fallbacks
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 try:
     from brain.universal_processor import process_universal_command
     from brain.universal_executor import execute_universal_task
+    from utils.logging import setup_logging
     SHADOW_AI_AVAILABLE = True
 except ImportError:
     SHADOW_AI_AVAILABLE = False
     logging.warning("Shadow AI modules not available - using fallback mode")
+    
+    # Fallback logging setup
+    def setup_logging():
+        logging.basicConfig(level=logging.INFO)
 
 # Don't import voice modules at startup to avoid microphone calibration
 VOICE_AVAILABLE = False
@@ -48,8 +57,6 @@ def _lazy_import_voice():
             VOICE_AVAILABLE = False
     
     return VOICE_AVAILABLE
-
-from utils.logging import setup_logging
 
 # Fallback functions
 def fallback_process_command(command):
