@@ -1,324 +1,139 @@
-## # 🧠 Shadow AI Agent
+# 🧠 Shadow AI - Universal Personal Assistant
 
-> Your Personal AI Assistant for Windows - Automate tasks with natural language commands
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Security: Audited](https://img.shields.io/badge/Security-Audited-green.svg)](docs/SECURITY_AUDIT_FINAL.md)
 
-Shadow is a powerful AI agent that accepts voice or text commands and performs multi-step tasks on your Windows machine. Think of it as your personal Copilot that can buy products, write documents, reply to emails, upload resumes, and much more!
+> **Transform your computer into an intelligent AI companion that understands and executes any task through natural language commands.**
 
-## 🌟 Features
+Shadow AI is a powerful, secure, and feature-rich personal AI assistant for Windows that combines advanced natural language processing with desktop automation, emotional intelligence, and beautiful user interfaces.
 
-- **Natural Language Processing**: Understands voice and text commands
-- **Multi-Modal Input**: Support for both voice and text input
-- **Desktop Automation**: Control applications, click, type, and navigate
-- **Browser Automation**: Search products, navigate websites, fill forms
-- **Document Creation**: Generate letters, resumes, and reports
-- **Safety First**: Confirmation prompts for sensitive actions
-- **Comprehensive Logging**: All actions are logged for transparency
+## ✨ Quick Start
 
-## 🚀 Quick Start
-
-### Installation
-
-1. **Clone the repository**:
-
-   ```bash
-   git clone https://github.com/yourusername/shadow-ai.git
-   cd shadow-ai
-   ```
-
-2. **Install dependencies**:
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Setup environment variables**:
-
-   ```bash
-   copy .env.template .env
-   # Edit .env file with your API keys
-   ```
-
-4. **Run Shadow AI**:
-   ```bash
-   python main.py
-   ```
-
-### First Run
-
-When you first run Shadow, you'll see a welcome screen with available commands:
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    🧠 Shadow AI Agent                       │
-│                Your Personal AI Assistant                   │
-│                                                             │
-│  Available commands:                                        │
-│  • Voice: Say your command naturally                       │
-│  • Text: Type your command                                  │
-│  • Examples:                                                │
-│    - "Open notepad and type hello world"                   │
-│    - "Write a leave letter for tomorrow"                   │
-│    - "Search for iPhone on Flipkart"                       │
-│    - "Take a screenshot"                                    │
-│                                                             │
-│  Commands: help, quit, voice, text, demo                   │
-└─────────────────────────────────────────────────────────────┘
-```
-
-## 🎯 Usage Examples
-
-### Basic Commands
+### 🚀 One-Click Launch
 
 ```bash
-# Interactive mode
-python main.py
+# Clone and run
+git clone https://github.com/kovendhan5/Shadow.git
+cd Shadow
+pip install -r requirements.txt
 
-# Single command mode
-python main.py "open notepad"
+# Configure your API key
+copy .env.template .env
+# Edit .env: GEMINI_API_KEY=your_actual_api_key_here
 
-# Voice mode
-python main.py --voice
-
-# Run demonstration
-python main.py --demo
+# Launch Shadow AI
+launch.bat
 ```
 
-### Voice Commands
+### 🎨 Choose Your Interface
 
-- **"Open notepad"** - Opens Notepad application
-- **"Write a leave letter for tomorrow due to health reasons"** - Creates a leave letter
-- **"Search for iPhone on Flipkart"** - Opens Flipkart and searches for iPhone
-- **"Take a screenshot"** - Captures screen and saves to desktop
-- **"Create a resume template"** - Generates a professional resume template
+- `launch.bat` - Main launcher with GUI selection
+- `start.bat` - Command line interface
+- `python main.py` - Direct launch
 
-### Text Commands
+## 🌟 Key Features
 
-You can also type commands directly:
+### 🎨 **8 Beautiful GUIs**
 
-- `open calculator`
-- `type: Hello World`
-- `click at 500, 300`
-- `search for laptop on amazon`
+- **Working** - Reliable, minimal interface
+- **Modern** - Clean, professional design
+- **Premium** - Elegant with advanced styling
+- **Ultra** - High-tech interface
+- **Cyberpunk** - Neon-themed futuristic design
+- **Orpheus** - Emotional AI with visual indicators
+- **Enhanced** - Ultimate experience with particle effects
 
-## 🛠️ Configuration
+### 🧠 **AI Capabilities**
 
-### Environment Variables
+- **Natural Language Processing** - Speak or type commands naturally
+- **Universal Task Execution** - Handles ANY computer task
+- **Emotional Intelligence** - Understands and responds to emotions
+- **Context Awareness** - Remembers conversation history
 
-Create a `.env` file from the template:
+### 🚀 **Automation Features**
 
-```env
-# AI Provider (choose one)
-OPENAI_API_KEY=your_openai_key_here
-GEMINI_API_KEY=your_gemini_key_here
-OLLAMA_URL=http://localhost:11434
+- **Desktop Control** - Applications, windows, keyboard/mouse
+- **Document Creation** - Letters, reports, presentations
+- **Web Automation** - Browsing, searching, form filling
+- **File Management** - Create, organize, manipulate files
 
-# Email (for email automation)
-EMAIL_ADDRESS=your_email@example.com
-EMAIL_PASSWORD=your_app_password
-```
-
-### Settings
-
-Modify `config.py` to customize behavior:
-
-```python
-# LLM Configuration
-DEFAULT_LLM_PROVIDER = "gemini"  # "openai", "gemini", "ollama"
-
-# Safety settings
-REQUIRE_CONFIRMATION = True
-CONFIRMATION_TIMEOUT = 30
-
-# Voice settings
-VOICE_ENABLED = True
-VOICE_LANGUAGE = "en-US"
-```
-
-## 🏗️ Architecture
+## 💬 Example Commands
 
 ```
-shadow/
+"Open notepad and write an article about AI"
+"Take a screenshot and save it to Desktop"
+"Search for the best laptops under $1000"
+"I'm feeling stressed, can you help?" (Orpheus mode)
+"Create a leave letter for tomorrow"
+```
+
+## 📁 Project Structure
+
+```
+Shadow AI/
 ├── main.py              # Main application entry point
-├── config.py            # Configuration and settings
+├── config.py            # Configuration settings
 ├── requirements.txt     # Python dependencies
-├── .env.template        # Environment variables template
-├── input/              # Input handling modules
-│   ├── voice_input.py  # Voice recognition and TTS
-│   └── text_input.py   # Text input and GUI
-├── brain/              # AI processing
-│   └── gpt_agent.py    # LLM integration and command processing
+├── launch.bat          # Main launcher
+├── start.bat           # Command line launcher
+├── brain/              # AI processing modules
 ├── control/            # System control modules
-│   ├── desktop.py      # Desktop automation
-│   ├── browser.py      # Web browser automation
-│   └── documents.py    # Document creation and manipulation
-├── utils/              # Utility modules
-│   ├── logging.py      # Logging configuration
-│   └── confirm.py      # User confirmation system
-└── logs/               # Log files
-    └── shadow.log      # Application logs
+├── gui/                # User interface options
+├── input/              # Voice & text input handling
+├── utils/              # Utility functions
+├── demos/              # Demo and example scripts
+├── tests/              # Test suite
+├── launchers/          # GUI launchers
+├── docs/               # Documentation
+└── examples/           # Usage examples
 ```
 
-## 🧩 Modules
+## 🛡️ Security & Privacy
 
-### Input System
+✅ **Fully Audited** - Comprehensive security review completed  
+✅ **No Data Collection** - All processing happens locally  
+✅ **Secure API Handling** - Proper encryption and key management  
+✅ **Privacy First** - Your data never leaves your computer
 
-- **Voice Input**: Uses speech recognition for natural voice commands
-- **Text Input**: CLI and GUI text input with confirmation dialogs
-- **Multi-modal**: Seamlessly switch between voice and text
+## 📚 Documentation
 
-### Brain (AI Processing)
+- **[Complete Documentation](docs/DOCS.md)** - Detailed setup and usage guide
+- **[GUI Collection](docs/GUI_COLLECTION_README.md)** - All GUI options explained
+- **[Orpheus Guide](docs/ORPHEUS_COMPLETE_GUIDE.md)** - Emotional AI documentation
+- **[Security Audit](docs/SECURITY_AUDIT_FINAL.md)** - Security review results
 
-- **GPT Integration**: OpenAI GPT-4 support
-- **Gemini Support**: Google Gemini AI integration
-- **Local LLM**: Ollama support for local models
-- **Command Understanding**: Natural language to structured actions
-
-### Control Systems
-
-- **Desktop Control**: PyAutoGUI for mouse/keyboard automation
-- **Browser Control**: Selenium for web automation
-- **Document Control**: Word, PDF, and text document creation
-
-### Safety & Logging
-
-- **Confirmation System**: User approval for sensitive actions
-- **Comprehensive Logging**: All actions logged with timestamps
-- **Error Handling**: Graceful error recovery and reporting
-
-## 📋 Use Cases
-
-### Document Creation
-
-```python
-# Voice: "Write a leave letter for tomorrow due to health reasons"
-# Creates: Leave_Letter_20240707_143022.docx on desktop
-```
-
-### Web Automation
-
-```python
-# Voice: "Search for iPhone 15 on Flipkart"
-# Actions: Opens browser → Navigates to Flipkart → Searches for iPhone 15
-```
-
-### Desktop Tasks
-
-```python
-# Voice: "Open calculator and take a screenshot"
-# Actions: Opens Calculator → Takes screenshot → Saves to desktop
-```
-
-### File Operations
-
-```python
-# Voice: "Create a resume template with my name John Doe"
-# Creates: Resume_Template_20240707_143022.docx
-```
-
-## 🔧 Development
-
-### Adding New Commands
-
-1. **Add to GPT Agent** (`brain/gpt_agent.py`):
-
-   ```python
-   # Add new action types to SYSTEM_PROMPT
-   "new_task_type": "action_name, another_action"
-   ```
-
-2. **Implement in Control Module**:
-
-   ```python
-   def execute_new_action(self, action: str, parameters: Dict[str, Any]) -> bool:
-       # Implementation here
-       pass
-   ```
-
-3. **Add to Main Executor** (`main.py`):
-   ```python
-   elif task_type == 'new_task_type':
-       return self.execute_new_action(action, parameters)
-   ```
-
-### Testing
-
-Run the demo mode to test basic functionality:
+## 🧪 Testing
 
 ```bash
-python main.py --demo
+# Run basic tests
+python tests/test_gpt_agent.py
+
+# Test specific features
+python tests/test_notepad_task.py
+python tests/test_orpheus.py
+
+# Demo the system
+python demos/demo.py
+python examples/basic_usage.py
 ```
-
-### Debugging
-
-Enable verbose logging by modifying `utils/logging.py`:
-
-```python
-logging.basicConfig(level=logging.DEBUG)
-```
-
-## 🔐 Security & Privacy
-
-### Safety Features
-
-- **Confirmation Required**: Sensitive actions require user approval
-- **Action Logging**: All actions are logged for audit purposes
-- **Timeout Protection**: Actions timeout to prevent hanging
-- **Error Handling**: Graceful failure without system damage
-
-### Privacy
-
-- **Local Processing**: Most operations happen locally
-- **Optional Cloud**: LLM calls can be local (Ollama) or cloud-based
-- **No Data Storage**: No personal data stored unless explicitly saved
-- **Transparent Logging**: All actions are logged and visible
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+We welcome contributions! See [CONTRIBUTING.md](docs/CONTRIBUTING.md) for guidelines.
 
-## 📝 License
+## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License - see [LICENSE](LICENSE) for details.
 
 ## 🆘 Support
 
-### Common Issues
-
-1. **Voice Recognition Not Working**:
-
-   - Check microphone permissions
-   - Install pyaudio: `pip install pyaudio`
-   - Run microphone test: `python -c "import speech_recognition as sr; print('Microphone working!')"`
-
-2. **Browser Automation Fails**:
-
-   - Install browser drivers (ChromeDriver, GeckoDriver)
-   - Check browser version compatibility
-   - Ensure browser is properly installed
-
-3. **Document Creation Errors**:
-   - Install Microsoft Office or LibreOffice
-   - Check file permissions in Desktop folder
-   - Verify python-docx installation
-
-### Getting Help
-
-- **Issues**: [GitHub Issues](https://github.com/yourusername/shadow-ai/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/shadow-ai/discussions)
-- **Email**: your.email@example.com
-
-## 🎉 Acknowledgments
-
-- OpenAI for GPT API
-- Google for Gemini API
-- Selenium WebDriver team
-- PyAutoGUI developers
-- Speech Recognition library contributors
+- **Issues**: Report bugs via GitHub Issues
+- **Documentation**: Check the [docs/](docs/) folder
+- **Examples**: See [examples/](examples/) and [demos/](demos/)
 
 ---
 
-**Made with ❤️ by the Shadow AI Team** listens to your voice or text, understands what you want, and takes action on your Windows machine — from opening apps to automating workflows.
+**Ready to transform your computer experience?** Clone the repo and launch your first GUI in under 5 minutes! 🚀
+
+_Made with ❤️ by the Shadow AI Team_

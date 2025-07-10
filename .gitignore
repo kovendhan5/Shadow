@@ -3,6 +3,7 @@
 .env.local
 .env.*.local
 .env.backup
+.env_safe
 
 # API Keys and Secrets
 *.key
@@ -37,6 +38,33 @@ MANIFEST
 # PyInstaller
 *.manifest
 *.spec
+
+# Temporary and Debug Files
+temp_*.txt
+debug_*.py
+*_debug.py
+*_temp.py
+quick_test*.py
+syntax_check.py
+verify_*.py
+temp_article.txt
+
+# Prevent specific unwanted files that were removed
+debug_gui.py
+manager.py
+task_manager.py
+verify_setup.py
+test_gemini_fix.bat
+temp_article.txt
+syntax_check.py
+
+# Duplicate and Backup Files
+*_backup.*
+*_old.*
+*_copy.*
+*.bak
+*.tmp
+*.temp
 
 # Installer logs
 pip-log.txt
@@ -209,21 +237,44 @@ shadow.log
 test_output/
 debug_output/
 
+# Prevent empty or duplicate files
+*_duplicate.*
+*_copy[0-9].*
+empty_file.*
+untitled*
+
 # System files
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
+desktop.ini
+.directory
 
-# Archives
-*.7z
-*.dmg
-*.gz
-*.iso
-*.jar
-*.rar
-*.tar
+# Editor files
+.vscode/settings.json
+.idea/workspace.xml
+*.sublime-workspace
+*~
+
+# Cache and temp directories
+node_modules/
+.cache/
+.tmp/
+.temp/
+
+# Logs that shouldn't be tracked
+*.log
+logs/*.log
+debug.log
+error.log
+
+# AI model files (if any)
+*.model
+*.bin
+*.gguf
+
+# Large files that shouldn't be in repo
 *.zip
+*.rar
+*.7z
+*.tar.gz
+*.tgz
