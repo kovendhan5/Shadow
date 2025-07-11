@@ -21,12 +21,34 @@ from control.documents import document_controller
 from input.text_input import get_text_input, show_message
 from input.voice_input import get_voice_input, speak_response
 from config import VOICE_ENABLED, REQUIRE_CONFIRMATION
+from utils.rag import search_knowledge_base
 
 class ShadowAI:
     def __init__(self):
         self.running = False
         self.voice_mode = False
+        self.plugin_commands = []  # List of plugin command handlers
+        self.load_plugins()
         self.setup()
+    
+    def load_plugins(self):
+        """Auto-discover and load plugins from the plugins/ directory."""
+        plugins_dir = os.path.join(os.path.dirname(__file__), 'plugins')
+        if not os.path.isdir(plugins_dir):
+            return
+        for fname in os.listdir(plugins_dir):
+            if fname.endswith('.py') and not fname.startswith('_'):
+                try:
+                    plugin_path = os.path.join(plugins_dir, fname)
+                    import importlib.util
+                    spec = importlib.util.spec_from_file_location(fname[:-3], plugin_path)
+                    mod = importlib.util.module_from_spec(spec)
+                    spec.loader.exec_module(mod)
+                    if hasattr(mod, 'register'):
+                        mod.register(self)
+                        print(f"✅ Loaded plugin: {fname}")
+                except Exception as e:
+                    print(f"❌ Failed to load plugin {fname}: {e}")
     
     def setup(self):
         """Initialize Shadow AI"""
@@ -92,38 +114,39 @@ class ShadowAI:
                 print(f"❌ Error: {e}")
     
     def handle_builtin_commands(self, command: str) -> bool:
-        """Handle built-in commands"""
+        """Handle built-in commands and plugin commands"""
         command_lower = command.lower().strip()
-        
+        # Built-in commands
         if command_lower in ['quit', 'exit', 'bye', 'goodbye']:
             self.running = False
             speak_response("Goodbye! Have a great day!")
             return True
-        
         elif command_lower == 'help':
             self.show_help()
             return True
-        
         elif command_lower == 'voice':
             self.voice_mode = True
             speak_response("Voice mode enabled. I'm listening for your commands.")
             print("🎤 Voice mode enabled")
             return True
-        
         elif command_lower == 'text':
             self.voice_mode = False
             speak_response("Text mode enabled. Please type your commands.")
             print("⌨️ Text mode enabled")
             return True
-        
         elif command_lower == 'demo':
             self.run_demo()
             return True
-        
         elif command_lower == 'status':
             self.show_status()
             return True
-        
+        # Plugin commands
+        for handler in self.plugin_commands:
+            try:
+                if handler(command):
+                    return True
+            except Exception as e:
+                print(f"❌ Plugin command error: {e}")
         return False
     
     def show_help(self):
@@ -262,13 +285,17 @@ class ShadowAI:
         return self.process_ai_command(command)
     
     def process_ai_command(self, command: str):
-        """Process AI command using Universal Processor and Executor"""
+        """Process AI command using Universal Processor and Executor, with RAG support"""
         try:
             logging.info(f"Processing universal command: {command}")
-            
+            # RAG: Search knowledge base for relevant info
+            kb_results = search_knowledge_base(command)
+            if kb_results:
+                print("📚 Found relevant info in knowledge base:")
+                for line in kb_results:
+                    print(f"  • {line}")
             # Use Universal Processor to understand the command
             task = process_universal_command(command)
-            
             if not task:
                 speak_response("I couldn't understand that command. Please try again.")
                 return {
@@ -276,14 +303,12 @@ class ShadowAI:
                     "message": "Could not understand command",
                     "error": "Command parsing failed"
                 }
-            
             # Show task summary to user
             print(f"\n🎯 Task: {task.description}")
             print(f"📊 Complexity: {task.complexity.value}")
             print(f"⚡ Estimated time: {task.estimated_duration} seconds")
             print(f"🔒 Risk level: {task.risk_level}")
             print(f"📝 Steps: {len(task.steps)}")
-            
             # Execute the task using Universal Executor
             result = execute_universal_task(task)
             
