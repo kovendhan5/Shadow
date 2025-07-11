@@ -9,6 +9,15 @@ import pyautogui
 from typing import Dict, Any
 from datetime import datetime
 
+# Ensure .env is loaded for API keys
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    print("[Warning] python-dotenv not installed. .env loading skipped.")
+# Force Orpheus TTS and torch to use CPU if no GPU is present
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
+
 # Import all modules
 from utils.logging import setup_logging
 from utils.confirm import confirm_action, confirm_sensitive_action
@@ -22,6 +31,8 @@ from input.text_input import get_text_input, show_message
 from input.voice_input import get_voice_input, speak_response
 from config import VOICE_ENABLED, REQUIRE_CONFIRMATION
 from utils.rag import search_knowledge_base
+from automation.whatsapp_automation import WhatsAppAutomator
+from utils.orpheus_tts import speak as orpheus_speak
 
 class ShadowAI:
     def __init__(self):
@@ -638,6 +649,48 @@ Date: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 """
         return article_template
 
+    def send_whatsapp_message(self, contact, message):
+        """Send a WhatsApp message to a contact using UI automation"""
+        automator = WhatsAppAutomator()
+        result = automator.send_message(contact, message)
+        if result:
+            orpheus_speak(f"Message sent to {contact} successfully.")
+        else:
+            orpheus_speak(f"Failed to send message to {contact}.")
+        return result
+
+    def run_conversation_mode(self):
+        """Continuous conversation mode with real-time TTS and task execution"""
+        self.running = True
+        orpheus_speak("Conversation mode enabled. I am listening.")
+        while self.running:
+            try:
+                command = get_voice_input("How can I help you?")
+                if not command:
+                    continue
+                if self.handle_builtin_commands(command):
+                    continue
+                # WhatsApp message intent (simple example)
+                if command.lower().startswith("send whatsapp message to"):
+                    try:
+                        parts = command.split("to",1)[1].strip().split(" ",1)
+                        contact = parts[0]
+                        message = parts[1] if len(parts)>1 else "Hello!"
+                        self.send_whatsapp_message(contact, message)
+                        continue
+                    except Exception:
+                        orpheus_speak("Sorry, I could not parse the WhatsApp command.")
+                        continue
+                # Fallback: normal AI command
+                result = self.process_ai_command(command)
+                if result and result.get("message"):
+                    orpheus_speak(result["message"])
+            except KeyboardInterrupt:
+                orpheus_speak("Goodbye!")
+                break
+            except Exception as e:
+                orpheus_speak(f"Error: {e}")
+
 def main():
     """Main entry point"""
     parser = argparse.ArgumentParser(description='Shadow AI - Your Personal AI Assistant')
@@ -645,6 +698,7 @@ def main():
     parser.add_argument('--voice', action='store_true', help='Enable voice mode')
     parser.add_argument('--demo', action='store_true', help='Run demonstration')
     parser.add_argument('--interactive', action='store_true', help='Run in interactive mode')
+    parser.add_argument('--conversation', action='store_true', help='Run in real-time conversation mode')
     
     args = parser.parse_args()
     
