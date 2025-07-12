@@ -1,20 +1,11 @@
+# Simple TTS fallback for Windows SAPI
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-os.environ["USE_CUDA"] = "0"
-os.environ["TORCH_CUDA_VERSION"] = "0"
-try:
-    import torch
-    torch.cuda.is_available = lambda : False
-    torch.cuda.device_count = lambda : 0
-    torch.cuda.current_device = lambda : 0
-    torch.cuda._initialized = True
-except Exception:
-    pass
-
-import orpheus_tts
 
 def speak(text):
+    """Simple TTS using Windows SAPI (built-in Windows speech)"""
     try:
-        orpheus_tts.speak(text)
+        # Use Windows built-in text-to-speech
+        os.system(f'powershell -Command "Add-Type -AssemblyName System.Speech; (New-Object System.Speech.Synthesis.SpeechSynthesizer).Speak(\'{text}\')"')
     except Exception as e:
-        print(f"[Orpheus TTS] Error: {e}")
+        print(f"[TTS] Error: {e}, falling back to print")
+        print(f"[SPEECH] {text}")
