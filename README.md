@@ -10,27 +10,40 @@ Shadow AI is a powerful, secure, and feature-rich personal AI assistant for Wind
 
 ## ✨ Quick Start
 
-### 🚀 One-Click Launch
+### 🚀 Easy Setup (Windows)
 
-```bash
-# Clone and run
-git clone https://github.com/kovendhan5/Shadow.git
-cd Shadow
-pip install -r requirements.txt
+1. **Setup Environment:**
+   ```bash
+   # Install Python 3.8+ if not already installed
+   # https://www.python.org/downloads/
 
-# Configure your API key
-copy .env.template .env
-# Edit .env: GEMINI_API_KEY=your_actual_api_key_here
+   # Create virtual environment (recommended)
+   python -m venv venv
+   venv\Scripts\activate
 
-# Launch Shadow AI
-launch.bat
-```
+   # Install dependencies
+   pip install -r requirements.txt
+   ```
 
-### 🎨 Choose Your Interface
+2. **Configure API Key:**
+   - Edit the `.env` file
+   - Add your API key: `GEMINI_API_KEY=your_actual_api_key_here`
+   - You can get a free Gemini API key from: https://ai.google.dev/
 
-- `launch.bat` - Main launcher with GUI selection
-- `start.bat` - Command line interface
-- `python main.py` - Direct launch
+3. **Launch Options:**
+   - **NEW:** `quick_start.bat` - Simplified launcher for beginners
+   - **NEW:** `launch_improved_new.bat` - Full launcher with environment setup
+   - `launch.bat` - Original launcher with GUI selection
+   - `start.bat` - Command line interface
+   - `python main.py` - Direct launch
+
+### 🔍 Troubleshooting
+
+If you encounter issues:
+1. Run `python quick_check.py` to test basic functionality
+2. Check if all dependencies are installed correctly
+3. Make sure your API keys are configured in `.env`
+4. Try reinstalling pyaudio: `pip install pipwin && pipwin install pyaudio`
 
 ## 🌟 Key Features
 
