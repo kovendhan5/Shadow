@@ -10,40 +10,78 @@ Shadow AI is a powerful, secure, and feature-rich personal AI assistant for Wind
 
 ## ✨ Quick Start
 
-### 🚀 Easy Setup (Windows)
+### 🚀 Super Easy Setup (Recommended)
 
-1. **Setup Environment:**
+1. **One-Command Setup:**
+   ```bash
+   # Run the enhanced installer (handles everything automatically)
+   python enhanced_installer.py
+   ```
+   
+   The installer will:
+   - ✅ Check your Python version
+   - ✅ Create a virtual environment
+   - ✅ Install all dependencies
+   - ✅ Set up configuration files
+   - ✅ Test the installation
+   - ✅ Create convenient launchers
+
+2. **Launch Shadow AI:**
+   - **Windows:** Double-click `quick_start.bat`
+   - **Any OS:** `python launch_shadow.py`
+   - **Direct:** Use the created launchers
+
+### 🛠️ Manual Setup (Alternative)
+
+If you prefer manual setup:
+
+1. **Environment Setup:**
    ```bash
    # Install Python 3.8+ if not already installed
    # https://www.python.org/downloads/
 
    # Create virtual environment (recommended)
    python -m venv venv
+   
+   # Activate environment
+   # Windows:
    venv\Scripts\activate
+   # Linux/Mac:
+   source venv/bin/activate
 
    # Install dependencies
    pip install -r requirements.txt
    ```
 
-2. **Configure API Key:**
-   - Edit the `.env` file
+2. **Configure API Keys:**
+   - Edit the `.env` file (or create from template)
    - Add your API key: `GEMINI_API_KEY=your_actual_api_key_here`
-   - You can get a free Gemini API key from: https://ai.google.dev/
+   - Get free keys from: https://ai.google.dev/
 
 3. **Launch Options:**
-   - **NEW:** `quick_start.bat` - Simplified launcher for beginners
-   - **NEW:** `launch_improved_new.bat` - Full launcher with environment setup
-   - `launch.bat` - Original launcher with GUI selection
-   - `start.bat` - Command line interface
-   - `python main.py` - Direct launch
+   - `quick_start.bat` - Enhanced launcher with dependency checks
+   - `launch_improved_new.bat` - Full launcher with environment setup
+   - `python main.py` - Direct command line launch
+   - `python diagnostic.py` - Run system diagnostics
 
 ### 🔍 Troubleshooting
 
-If you encounter issues:
-1. Run `python quick_check.py` to test basic functionality
-2. Check if all dependencies are installed correctly
-3. Make sure your API keys are configured in `.env`
-4. Try reinstalling pyaudio: `pip install pipwin && pipwin install pyaudio`
+**Quick Fix:** Run the diagnostic tool first:
+```bash
+python diagnostic.py
+```
+
+**Common Issues:**
+1. **Missing Dependencies:** Run `python enhanced_installer.py`
+2. **Python Too Old:** Install Python 3.8+ from python.org
+3. **Import Errors:** Activate virtual environment: `venv\Scripts\activate`
+4. **API Issues:** Configure keys in `.env` file
+5. **Permission Errors:** Run as administrator (Windows) or with sudo (Linux)
+
+**Get Help:**
+- Check `shadow_ai_diagnostic_report.json` after running diagnostics
+- Review logs in the `logs/` directory
+- See detailed docs in `docs/` folder
 
 ## 🌟 Key Features
 
