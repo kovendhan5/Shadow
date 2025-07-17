@@ -5,9 +5,56 @@ import os
 import argparse
 import time
 import traceback
-import pyautogui
 from typing import Dict, Any
 from datetime import datetime
+
+# Enhanced error handling for imports
+def safe_import_with_fallback(module_name, fallback_value=None, required=False):
+    """Safely import modules with fallback handling"""
+    try:
+        return __import__(module_name)
+    except ImportError as e:
+        if required:
+            print(f"❌ Required module '{module_name}' not found: {e}")
+            print("   Please run: pip install -r requirements.txt")
+            sys.exit(1)
+        else:
+            if fallback_value is not None:
+                print(f"⚠️  Module '{module_name}' not available, using fallback")
+                return fallback_value
+            else:
+                print(f"⚠️  Module '{module_name}' not available, some features may be limited")
+                return None
+
+# Try to import pyautogui with fallback
+try:
+    import pyautogui
+    PYAUTOGUI_AVAILABLE = True
+    # Configure pyautogui if available
+    pyautogui.PAUSE = 0.5
+    pyautogui.FAILSAFE = True
+except ImportError:
+    print("⚠️  pyautogui not available - desktop automation will be limited")
+    PYAUTOGUI_AVAILABLE = False
+    # Create a mock pyautogui for basic functionality
+    class MockPyAutoGUI:
+        @staticmethod
+        def typewrite(text, interval=0.1):
+            print(f"[MOCK] Would type: {text[:50]}...")
+        @staticmethod
+        def click(x, y):
+            print(f"[MOCK] Would click at ({x}, {y})")
+        @staticmethod
+        def screenshot():
+            print("[MOCK] Would take screenshot")
+            return None
+        @staticmethod
+        def hotkey(*keys):
+            print(f"[MOCK] Would press: {' + '.join(keys)}")
+        @staticmethod
+        def press(key):
+            print(f"[MOCK] Would press: {key}")
+    pyautogui = MockPyAutoGUI()
 
 # Ensure .env is loaded for API keys
 try:
@@ -15,8 +62,17 @@ try:
     load_dotenv()
 except ImportError:
     print("[Warning] python-dotenv not installed. .env loading skipped.")
+
 # Force Orpheus TTS and torch to use CPU if no GPU is present
 os.environ["CUDA_VISIBLE_DEVICES"] = ""
+
+# Try to load robust handler
+try:
+    from utils.robust_handler import get_robust_shadow, check_and_report_dependencies
+    ROBUST_HANDLER_AVAILABLE = True
+except ImportError:
+    print("⚠️  Robust handler not available, using basic functionality")
+    ROBUST_HANDLER_AVAILABLE = False
 
 # Import all modules
 from utils.logging import setup_logging
