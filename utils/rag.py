@@ -23,3 +23,6 @@ def search_knowledge_base(query: str, max_results=3) -> List[str]:
         except Exception:
             continue
     return results
+
+
+

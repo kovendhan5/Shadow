@@ -411,5 +411,3 @@ def check_and_report_dependencies():
 def install_missing_dependencies():
     """Install missing dependencies"""
     return robust_shadow.install_missing_dependencies()
-
-
