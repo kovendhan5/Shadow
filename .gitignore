@@ -278,3 +278,6 @@ error.log
 *.7z
 *.tar.gz
 *.tgz
+
+
+report/

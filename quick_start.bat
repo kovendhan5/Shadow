@@ -1,13 +1,60 @@
 @echo off
 setlocal enabledelayedexpansion
+color 0A
+title Shadow AI - Quick Start
 
 echo.
-echo ====================================================
-echo     🚀 Shadow AI - Enhanced Quick Start Launcher
-echo ====================================================
+echo ████████╗██╗  ██╗ █████╗ ██████╗  ██████╗ ██╗    ██╗     █████╗ ██╗
+echo ╚══██╔══╝██║  ██║██╔══██╗██╔══██╗██╔═══██╗██║    ██║    ██╔══██╗██║
+echo    ██║   ███████║███████║██║  ██║██║   ██║██║ █╗ ██║    ███████║██║
+echo    ██║   ██╔══██║██╔══██║██║  ██║██║   ██║██║███╗██║    ██╔══██║██║
+echo    ██║   ██║  ██║██║  ██║██████╔╝╚██████╔╝╚███╔███╔╝    ██║  ██║██║
+echo    ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝  ╚═════╝  ╚══╝╚══╝     ╚═╝  ╚═╝╚═╝
+echo.
+echo                     Your AI Assistant is Starting...
 echo.
 
+:: Check for Python installation (try multiple commands)
+echo [1/4] Checking Python installation...
+set PYTHON_CMD=
+
+py --version >nul 2>&1
+if !errorlevel! equ 0 (
+    set PYTHON_CMD=py
+    echo ✅ Python launcher found
+    py --version
+    goto check_venv
+)
+
+python --version >nul 2>&1
+if !errorlevel! equ 0 (
+    set PYTHON_CMD=python
+    echo ✅ Python found
+    python --version
+    goto check_venv
+)
+
+python3 --version >nul 2>&1
+if !errorlevel! equ 0 (
+    set PYTHON_CMD=python3
+    echo ✅ Python3 found
+    python3 --version
+    goto check_venv
+)
+
+echo ❌ Python not found!
+echo.
+echo Please install Python 3.8+ by running one of these:
+echo   1. Run: install_python_and_setup.bat (as Administrator)
+echo   2. Download from: https://python.org/downloads/
+echo   3. Enable Python in Windows Store
+echo.
+pause
+exit /b 1
+
+:check_venv
 :: Check for virtual environment and activate if available
+echo [2/4] Checking virtual environment...
 if exist venv\ (
     echo 🔄 Activating virtual environment...
     call venv\Scripts\activate.bat
@@ -17,46 +64,57 @@ if exist venv\ (
         echo ⚠️  Could not activate virtual environment
     )
 ) else (
-    echo ⚠️  No virtual environment found (venv\).
+    echo ⚠️  No virtual environment found.
     echo    Running in system Python environment.
-    echo    For better isolation, consider running enhanced_installer.py
-)
-
-:: Check Python availability
-python --version >nul 2>&1
-if !errorlevel! neq 0 (
-    echo ❌ Python not found! Please install Python 3.8+ from https://python.org
-    pause
-    exit /b 1
 )
 
 :: Check if basic dependencies are available
-echo.
-echo 🔍 Checking basic dependencies...
-python -c "import sys, os, json, logging; print('✅ Core Python modules OK')" 2>nul
+echo [3/4] Checking Shadow AI files...
+if not exist main.py (
+    echo ❌ main.py not found! Please run this from the Shadow AI directory.
+    pause
+    exit /b 1
+)
+echo ✅ Shadow AI files found
+
+echo [4/4] Testing basic functionality...
+%PYTHON_CMD% -c "import sys, os, json, logging; print('✅ Core Python modules OK')" 2>nul
 if !errorlevel! neq 0 (
     echo ❌ Basic Python modules missing!
     goto install_prompt
 )
 
-python -c "import pyautogui; print('✅ PyAutoGUI available')" 2>nul
-if !errorlevel! neq 0 (
-    echo ⚠️  PyAutoGUI not found
-    set MISSING_DEPS=1
-)
-
-python -c "import config; print('✅ Config module available')" 2>nul
+%PYTHON_CMD% -c "import config; print('✅ Config module available')" 2>nul
 if !errorlevel! neq 0 (
     echo ❌ Config module not found!
     goto install_prompt
 )
 
-if defined MISSING_DEPS (
+:: Test optional dependencies
+set MISSING_DEPS=0
+%PYTHON_CMD% -c "import pyautogui; print('✅ PyAutoGUI available')" 2>nul
+if !errorlevel! neq 0 (
+    echo ⚠️  PyAutoGUI not found (using fallback)
+    set MISSING_DEPS=1
+)
+
+%PYTHON_CMD% -c "import pyttsx3; print('✅ Text-to-Speech available')" 2>nul
+if !errorlevel! neq 0 (
+    echo ⚠️  pyttsx3 not found (using fallback)
+    set MISSING_DEPS=1
+)
+
+if !MISSING_DEPS! equ 1 (
     echo.
     echo ⚠️  Some dependencies are missing. Shadow AI will use fallback functionality.
-    echo    For full features, consider running: pip install -r requirements.txt
+    echo    For full features, consider option 6 in the menu below.
     echo.
 )
+
+echo.
+echo ========================================
+echo    Shadow AI Ready!
+echo ========================================
 
 :: Show menu
 :menu
@@ -77,27 +135,28 @@ set /p choice="Enter your choice (0-6): "
 if "!choice!"=="1" (
     echo.
     echo 🚀 Starting Shadow AI Command Line Interface...
-    python main.py
+    %PYTHON_CMD% main.py --interactive
     goto end
 ) else if "!choice!"=="2" (
     echo.
     echo 🎨 Starting Shadow AI Working GUI...
-    python gui\gui_working.py
+    %PYTHON_CMD% gui\gui_working.py
     goto end
 ) else if "!choice!"=="3" (
     echo.
     echo 💎 Starting Shadow AI Premium GUI...
-    python gui\gui_premium.py
+    %PYTHON_CMD% gui\gui_premium.py
     goto end
 ) else if "!choice!"=="4" (
     echo.
     echo 🔍 Running diagnostic tool...
-    python diagnostic.py
+    %PYTHON_CMD% diagnostic.py
     goto menu
 ) else if "!choice!"=="5" (
     echo.
-    echo � Installing/updating dependencies...
-    pip install -r requirements.txt --upgrade
+    echo 📦 Installing/updating dependencies...
+    %PYTHON_CMD% -m pip install --upgrade pip
+    %PYTHON_CMD% -m pip install -r requirements.txt --upgrade
     echo.
     echo Press any key to return to menu...
     pause >nul
