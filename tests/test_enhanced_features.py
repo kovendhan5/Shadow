@@ -9,6 +9,11 @@ import sys
 import traceback
 from datetime import datetime
 
+# Add project root to Python path
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
 def test_imports():
     """Test all enhanced feature imports"""
     print("🧪 Testing Enhanced Feature Imports...")
