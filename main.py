@@ -8,6 +8,11 @@ import traceback
 from typing import Dict, Any
 from datetime import datetime
 
+# Add project root to Python path for imports
+project_root = os.path.dirname(os.path.abspath(__file__))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
 # Add colorama for a better CLI experience
 try:
     import colorama
