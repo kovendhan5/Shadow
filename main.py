@@ -8,6 +8,18 @@ import traceback
 from typing import Dict, Any
 from datetime import datetime
 
+# Add colorama for a better CLI experience
+try:
+    import colorama
+    from colorama import Fore, Style
+    colorama.init(autoreset=True)
+    COLORAMA_AVAILABLE = True
+except ImportError:
+    COLORAMA_AVAILABLE = False
+    class DummyColor:
+        RED = GREEN = YELLOW = BLUE = MAGENTA = CYAN = WHITE = RESET = ""
+    Fore = Style = DummyColor()
+
 # Enhanced error handling for imports
 def safe_import_with_fallback(module_name, fallback_value=None, required=False):
     """Safely import modules with fallback handling"""
@@ -90,6 +102,43 @@ from utils.rag import search_knowledge_base
 from automation.whatsapp_automation import WhatsAppAutomator
 from utils.orpheus_tts import speak as orpheus_speak
 
+# Import new enhanced modules
+try:
+    from control.file_manager import file_manager
+    FILE_MANAGER_AVAILABLE = True
+except ImportError:
+    FILE_MANAGER_AVAILABLE = False
+
+try:
+    from control.web_search import web_search
+    WEB_SEARCH_AVAILABLE = True
+except ImportError:
+    WEB_SEARCH_AVAILABLE = False
+
+try:
+    from control.system_info import system_diagnostics
+    SYSTEM_INFO_AVAILABLE = True
+except ImportError:
+    SYSTEM_INFO_AVAILABLE = False
+
+try:
+    from control.notifications import notification_manager, notify_success, notify_error, notify_info
+    NOTIFICATIONS_AVAILABLE = True
+except ImportError:
+    NOTIFICATIONS_AVAILABLE = False
+
+try:
+    from control.clipboard_manager import clipboard_manager, copy_text, paste_text
+    CLIPBOARD_AVAILABLE = True
+except ImportError:
+    CLIPBOARD_AVAILABLE = False
+
+try:
+    from control.hotkey_manager import hotkey_manager, start_hotkeys
+    HOTKEYS_AVAILABLE = True
+except ImportError:
+    HOTKEYS_AVAILABLE = False
+
 class ShadowAI:
     def __init__(self):
         self.running = False
@@ -117,10 +166,31 @@ class ShadowAI:
                 except Exception as e:
                     print(f"❌ Failed to load plugin {fname}: {e}")
     
+    def print_banner(self):
+        """Print enhanced startup banner"""
+        if COLORAMA_AVAILABLE:
+            print(f"\n{Fore.CYAN}{'='*77}")
+            print(f"{Fore.MAGENTA}   ███████╗██╗  ██╗ █████╗ ██████╗  ██████╗ ██╗    ██╗  {Fore.CYAN}██╗ █████╗ ██╗")
+            print(f"{Fore.MAGENTA}   ██╔════╝██║  ██║██╔══██╗██╔══██╗██╔═══██╗██║    ██║  {Fore.CYAN}██║██╔══██╗██║")
+            print(f"{Fore.MAGENTA}   ███████╗███████║███████║██║  ██║██║   ██║██║ █╗ ██║  {Fore.CYAN}██║███████║██║")
+            print(f"{Fore.MAGENTA}   ╚════██║██╔══██║██╔══██║██║  ██║██║   ██║██║███╗██║  {Fore.CYAN}██║██╔══██║╚═╝")
+            print(f"{Fore.MAGENTA}   ███████║██║  ██║██║  ██║██████╔╝╚██████╔╝╚███╔███╔╝  {Fore.CYAN}██║██║  ██║██╗")
+            print(f"{Fore.MAGENTA}   ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝  ╚═════╝  ╚══╝╚══╝  {Fore.CYAN}╚═╝╚═╝  ╚═╝╚═╝")
+            print(f"{Fore.CYAN}{'='*77}")
+            print(f"{Fore.YELLOW}                  Universal Personal Assistant")
+            print(f"{Fore.GREEN}                         Version 3.0 - Universal")
+            print(f"{Fore.CYAN}{'='*77}\n")
+        else:
+            print("\n" + "="*60)
+            print("          SHADOW AI - UNIVERSAL ASSISTANT")
+            print("="*60 + "\n")
     def setup(self):
         """Initialize Shadow AI"""
         setup_logging()
         logging.info("🧠 Shadow AI Agent starting up...")
+        
+        # Initialize enhanced modules
+        self.init_enhanced_features()
         
         # Welcome message
         welcome_msg = """
@@ -128,28 +198,67 @@ class ShadowAI:
         │              🧠 Shadow AI Universal Assistant                │
         │           Your Intelligent Computer Companion               │
         │                                                             │
-        │  🌟 NEW: Universal Command Processing                       │
+        │  🌟 NEW: Enhanced Features & Capabilities                   │
         │  I can now understand and execute ANY computer task!        │
+        │                                                             │
+        │  🚀 NEW FEATURES:                                           │
+        │  • Advanced File Management & Organization                  │
+        │  • Quick Web Search & Information Retrieval                │
+        │  • System Diagnostics & Monitoring                         │
+        │  • Desktop Notifications & Alerts                          │
+        │  • Clipboard Management & History                          │
+        │  • Customizable Hotkeys & Shortcuts                        │
         │                                                             │
         │  Examples of what I can do:                                 │
         │  • "Write an article about artificial intelligence"         │
-        │  • "Create a leave letter for tomorrow"                     │
-        │  • "Search for iPhone on Flipkart and compare prices"       │
-        │  • "Open PowerPoint and create a presentation"             │
-        │  • "Find all PDF files in Downloads and organize them"      │
-        │  • "Send an email to my team about the project update"      │
-        │  • "Create a backup of my important documents"              │
-        │  • "Set up a meeting reminder for 3 PM"                     │
+        │  • "Organize my Downloads folder by file type"             │
+        │  • "Search Google for Python tutorials"                    │
+        │  • "Show system information and performance"               │
+        │  • "Copy this text to clipboard and save history"          │
+        │  • "Take a screenshot with Ctrl+Shift+S"                   │
+        │  • "Find and delete large files over 100MB"                │
+        │  • "Create a backup of my Documents folder"                │
         │                                                             │
         │  🎯 I understand context and can execute complex workflows  │
         │  🔐 I prioritize security and ask for confirmation          │
         │  🧠 I learn from your preferences and improve over time     │
         │                                                             │
-        │  Commands: help, quit, voice, text, demo, status           │
+        │  Commands: help, quit, voice, text, demo, status, features │
         └─────────────────────────────────────────────────────────────┘
         """
         print(welcome_msg)
-        speak_response("Shadow AI Universal Assistant is ready. I can help you with any computer task. What would you like me to do?")
+        speak_response("Shadow AI Universal Assistant with enhanced features is ready. I can help you with any computer task. What would you like me to do?")
+    
+    def init_enhanced_features(self):
+        """Initialize enhanced features"""
+        try:
+            # Start notifications
+            if NOTIFICATIONS_AVAILABLE:
+                notify_success("Shadow AI Enhanced Features Loaded")
+            
+            # Start hotkeys if available
+            if HOTKEYS_AVAILABLE:
+                hotkey_manager.start_listening()
+                logging.info("Hotkey system activated")
+            
+            # Initialize file manager
+            if FILE_MANAGER_AVAILABLE:
+                logging.info("File management system ready")
+            
+            # Initialize web search
+            if WEB_SEARCH_AVAILABLE:
+                logging.info("Web search system ready")
+            
+            # Initialize system diagnostics
+            if SYSTEM_INFO_AVAILABLE:
+                logging.info("System diagnostics ready")
+            
+            # Initialize clipboard manager
+            if CLIPBOARD_AVAILABLE:
+                logging.info("Clipboard management ready")
+            
+        except Exception as e:
+            logging.error(f"Error initializing enhanced features: {e}")
     
     def run_interactive(self):
         """Run Shadow AI in interactive mode"""
@@ -168,6 +277,10 @@ class ShadowAI:
                 
                 # Process built-in commands
                 if self.handle_builtin_commands(command):
+                    continue
+                
+                # Process enhanced commands first
+                if self.handle_enhanced_commands(command):
                     continue
                 
                 # Process AI command
@@ -206,6 +319,9 @@ class ShadowAI:
             return True
         elif command_lower == 'status':
             self.show_status()
+            return True
+        elif command_lower == 'features':
+            self.show_enhanced_features()
             return True
         # Plugin commands
         for handler in self.plugin_commands:
@@ -434,36 +550,63 @@ class ShadowAI:
                 "error": str(e)
             }
     
-    def execute_action(self, action_data: Dict[str, Any]) -> bool:
-        """Execute the action based on action data"""
+    def handle_enhanced_commands(self, command: str) -> bool:
+        """Handle enhanced feature commands"""
         try:
-            task_type = action_data.get('task_type')
-            action = action_data.get('action')
-            parameters = action_data.get('parameters', {})
-            confirmation_required = action_data.get('confirmation_required', False)
-            description = action_data.get('description', 'Unknown action')
+            command_lower = command.lower().strip()
             
-            # Check for confirmation if required
-            if confirmation_required:
-                if not confirm_action(description):
-                    speak_response("Action cancelled by user.")
-                    return False
+            # File management commands
+            if FILE_MANAGER_AVAILABLE:
+                if "organize" in command_lower and "folder" in command_lower:
+                    return self.handle_file_organization(command)
+                elif "find large files" in command_lower:
+                    return self.handle_find_large_files(command)
+                elif "backup" in command_lower:
+                    return self.handle_backup_command(command)
+                elif "clean temp files" in command_lower:
+                    return self.handle_clean_temp(command)
             
-            # Execute based on task type
-            if task_type == 'desktop_control':
-                return self.execute_desktop_action(action, parameters)
-            elif task_type == 'document_creation':
-                return self.execute_document_action(action, parameters)
-            elif task_type == 'web_automation':
-                return self.execute_web_action(action, parameters)
-            elif task_type == 'file_operation':
-                return self.execute_file_action(action, parameters)
-            else:
-                logging.warning(f"Unknown task type: {task_type}")
-                return False
-        
+            # Web search commands
+            if WEB_SEARCH_AVAILABLE:
+                if command_lower.startswith("search ") or "google" in command_lower:
+                    return self.handle_web_search(command)
+                elif "search news" in command_lower:
+                    return self.handle_news_search(command)
+                elif "search tutorial" in command_lower:
+                    return self.handle_tutorial_search(command)
+            
+            # System info commands
+            if SYSTEM_INFO_AVAILABLE:
+                if "system info" in command_lower or "system status" in command_lower:
+                    return self.handle_system_info(command)
+                elif "system health" in command_lower:
+                    return self.handle_system_health(command)
+                elif "running processes" in command_lower:
+                    return self.handle_process_list(command)
+            
+            # Clipboard commands
+            if CLIPBOARD_AVAILABLE:
+                if "copy to clipboard" in command_lower:
+                    return self.handle_clipboard_copy(command)
+                elif "paste from clipboard" in command_lower:
+                    return self.handle_clipboard_paste(command)
+                elif "clipboard history" in command_lower:
+                    return self.handle_clipboard_history(command)
+            
+            # Notification commands
+            if NOTIFICATIONS_AVAILABLE:
+                if "notify" in command_lower or "notification" in command_lower:
+                    return self.handle_notification_command(command)
+            
+            # Hotkey commands
+            if HOTKEYS_AVAILABLE:
+                if "hotkey" in command_lower or "shortcut" in command_lower:
+                    return self.handle_hotkey_command(command)
+            
+            return False
+            
         except Exception as e:
-            logging.error(f"Error executing action: {e}")
+            logging.error(f"Error handling enhanced commands: {e}")
             return False
     
     def execute_desktop_action(self, action: str, parameters: Dict[str, Any]) -> bool:
@@ -632,6 +775,244 @@ class ShadowAI:
             logging.error(f"Error running single command: {e}")
             return False
     
+    def show_enhanced_features(self):
+        """Show enhanced features status"""
+        features_status = f"""
+        🚀 Shadow AI Enhanced Features Status:
+        
+        📁 File Management: {'✅ Available' if FILE_MANAGER_AVAILABLE else '❌ Not Available'}
+        🌐 Web Search: {'✅ Available' if WEB_SEARCH_AVAILABLE else '❌ Not Available'}
+        💻 System Info: {'✅ Available' if SYSTEM_INFO_AVAILABLE else '❌ Not Available'}
+        🔔 Notifications: {'✅ Available' if NOTIFICATIONS_AVAILABLE else '❌ Not Available'}
+        📋 Clipboard: {'✅ Available' if CLIPBOARD_AVAILABLE else '❌ Not Available'}
+        🔥 Hotkeys: {'✅ Available' if HOTKEYS_AVAILABLE else '❌ Not Available'}
+        
+        🎯 Enhanced Commands Available:
+        • "organize Downloads folder by type"
+        • "search Google for Python tutorials"
+        • "show system information"
+        • "copy this text to clipboard"
+        • "find large files over 100MB"
+        • "create backup of Documents"
+        • "show hotkey help"
+        """
+        print(features_status)
+        speak_response("Enhanced features status displayed. All advanced capabilities are ready to use.")
+    
+    # Enhanced Command Handlers
+    def handle_file_organization(self, command: str) -> bool:
+        """Handle file organization commands"""
+        try:
+            if "downloads" in command.lower():
+                folder_path = os.path.join(os.path.expanduser('~'), 'Downloads')
+            elif "documents" in command.lower():
+                folder_path = os.path.join(os.path.expanduser('~'), 'Documents')
+            elif "desktop" in command.lower():
+                folder_path = os.path.join(os.path.expanduser('~'), 'Desktop')
+            else:
+                # Extract folder path from command
+                words = command.split()
+                folder_path = None
+                for i, word in enumerate(words):
+                    if word.lower() == "organize" and i + 1 < len(words):
+                        folder_path = words[i + 1]
+                        break
+                
+                if not folder_path:
+                    speak_response("Please specify which folder to organize")
+                    return True
+            
+            if folder_path and os.path.exists(folder_path):
+                result = file_manager.organize_by_type(folder_path)
+                if result:
+                    message = f"Organized {sum(result.values())} files into {len(result)} categories"
+                    speak_response(message)
+                    if NOTIFICATIONS_AVAILABLE:
+                        notify_success(message)
+                else:
+                    speak_response("Failed to organize folder")
+                return True
+            else:
+                speak_response(f"Folder not found: {folder_path}")
+                return True
+                
+        except Exception as e:
+            logging.error(f"Error in file organization: {e}")
+            speak_response("Error organizing files")
+            return True
+    
+    def handle_find_large_files(self, command: str) -> bool:
+        """Handle finding large files"""
+        try:
+            # Extract size from command
+            import re
+            size_match = re.search(r'(\d+)\s*mb', command.lower())
+            min_size = int(size_match.group(1)) if size_match else 100
+            
+            # Extract path from command or use default
+            folder_path = os.path.expanduser('~')
+            
+            large_files = file_manager.find_large_files(folder_path, min_size)
+            
+            if large_files:
+                message = f"Found {len(large_files)} files larger than {min_size}MB"
+                speak_response(message)
+                
+                # Show first few files
+                for file_path, size_mb in large_files[:5]:
+                    print(f"📁 {size_mb}MB: {file_path}")
+                
+                if NOTIFICATIONS_AVAILABLE:
+                    notify_info(f"Found {len(large_files)} large files")
+            else:
+                speak_response(f"No files larger than {min_size}MB found")
+            
+            return True
+            
+        except Exception as e:
+            logging.error(f"Error finding large files: {e}")
+            speak_response("Error finding large files")
+            return True
+    
+    def handle_backup_command(self, command: str) -> bool:
+        """Handle backup commands"""
+        try:
+            # Extract source from command
+            if "documents" in command.lower():
+                source_path = os.path.join(os.path.expanduser('~'), 'Documents')
+            elif "desktop" in command.lower():
+                source_path = os.path.join(os.path.expanduser('~'), 'Desktop')
+            elif "pictures" in command.lower():
+                source_path = os.path.join(os.path.expanduser('~'), 'Pictures')
+            else:
+                speak_response("Please specify what to backup (documents, desktop, pictures)")
+                return True
+            
+            result = file_manager.create_backup(source_path)
+            
+            if result:
+                message = f"Backup created successfully"
+                speak_response(message)
+                if NOTIFICATIONS_AVAILABLE:
+                    notify_success(message)
+            else:
+                speak_response("Failed to create backup")
+            
+            return True
+            
+        except Exception as e:
+            logging.error(f"Error creating backup: {e}")
+            speak_response("Error creating backup")
+            return True
+    
+    def handle_web_search(self, command: str) -> bool:
+        """Handle web search commands"""
+        try:
+            # Extract search query
+            command_lower = command.lower()
+            
+            if command_lower.startswith("search "):
+                query = command[7:].strip()
+            elif "google" in command_lower:
+                # Extract query after "google" or "google for"
+                parts = command_lower.split("google")
+                if len(parts) > 1:
+                    query = parts[1].replace("for", "").strip()
+                else:
+                    query = ""
+            else:
+                query = command.strip()
+            
+            if query:
+                result = web_search.search_web(query)
+                if result:
+                    message = f"Web search opened for: {query}"
+                    speak_response(message)
+                    if NOTIFICATIONS_AVAILABLE:
+                        notify_success(message)
+                else:
+                    speak_response("Failed to open web search")
+            else:
+                speak_response("Please specify what to search for")
+            
+            return True
+            
+        except Exception as e:
+            logging.error(f"Error in web search: {e}")
+            speak_response("Error performing web search")
+            return True
+    
+    def handle_system_info(self, command: str) -> bool:
+        """Handle system information commands"""
+        try:
+            if "report" in command.lower():
+                # Generate full system report
+                report = system_diagnostics.generate_system_report()
+                print(report)
+                
+                # Save report to file
+                report_file = f"system_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+                with open(report_file, 'w', encoding='utf-8') as f:
+                    f.write(report)
+                
+                message = f"System report generated and saved to {report_file}"
+                speak_response(message)
+                
+                if NOTIFICATIONS_AVAILABLE:
+                    notify_success(message)
+            else:
+                # Show basic system info
+                cpu_info = system_diagnostics.get_cpu_info()
+                mem_info = system_diagnostics.get_memory_info()
+                
+                info_text = f"""
+                💻 System Information:
+                CPU Usage: {cpu_info.get('cpu_percent_total', 'N/A')}%
+                Memory Usage: {mem_info.get('percentage', 'N/A')}% ({mem_info.get('used_gb', 'N/A')}/{mem_info.get('total_gb', 'N/A')} GB)
+                System Uptime: {system_diagnostics.get_system_uptime()}
+                """
+                print(info_text)
+                speak_response("System information displayed")
+                
+                if NOTIFICATIONS_AVAILABLE:
+                    notify_info(f"CPU: {cpu_info.get('cpu_percent_total', 'N/A')}%, Memory: {mem_info.get('percentage', 'N/A')}%")
+            
+            return True
+            
+        except Exception as e:
+            logging.error(f"Error getting system info: {e}")
+            speak_response("Error getting system information")
+            return True
+    
+    def handle_clipboard_copy(self, command: str) -> bool:
+        """Handle clipboard copy commands"""
+        try:
+            # Extract text to copy
+            if "copy to clipboard" in command.lower():
+                text = command.lower().replace("copy to clipboard", "").strip()
+                text = command[command.lower().find("copy to clipboard") + len("copy to clipboard"):].strip()
+            else:
+                text = command.strip()
+            
+            if text:
+                result = clipboard_manager.copy_to_clipboard(text)
+                if result:
+                    message = f"Copied to clipboard: {text[:30]}..."
+                    speak_response(message)
+                    if NOTIFICATIONS_AVAILABLE:
+                        notify_success("Text copied to clipboard")
+                else:
+                    speak_response("Failed to copy to clipboard")
+            else:
+                speak_response("Please specify text to copy")
+            
+            return True
+            
+        except Exception as e:
+            logging.error(f"Error copying to clipboard: {e}")
+            speak_response("Error copying to clipboard")
+            return True
+    
     def cleanup(self):
         """Clean up resources"""
         try:
@@ -784,4 +1165,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

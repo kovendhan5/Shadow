@@ -1,0 +1,11 @@
+{
+  "hotkeys": {
+    "ctrl+shift+s": "take_screenshot",
+    "ctrl+shift+n": "open_notepad",
+    "ctrl+shift+c": "copy_current_selection",
+    "ctrl+shift+v": "paste_clipboard",
+    "ctrl+shift+h": "show_help",
+    "ctrl+shift+q": "show_quick_menu"
+  },
+  "listening": false
+}

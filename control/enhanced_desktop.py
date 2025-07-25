@@ -18,6 +18,8 @@ class EnhancedController(DesktopController):
         self.ai_article_templates = {
             "ai": self._generate_ai_article(),
             "artificial intelligence": self._generate_ai_article(),
+            "asi": self._generate_asi_article(),
+            "artificial super intelligence": self._generate_asi_article(),
             "machine learning": self._generate_ml_article(),
             "deep learning": self._generate_dl_article(),
             "technology": self._generate_tech_article()
@@ -54,6 +56,39 @@ class EnhancedController(DesktopController):
             logging.error(f"Error writing article: {e}")
             return False
     
+    def open_notepad_and_write_article_save_as(self, topic: str = "ai", filename: str = None) -> bool:
+        """Open Notepad, write article, and save with specified filename"""
+        try:
+            logging.info(f"Creating article about {topic} and saving as {filename}")
+            
+            # Step 1: Write the article first
+            if not self.open_notepad_and_write_article(topic):
+                return False
+            
+            # Step 2: Save the file if filename is provided
+            if filename:
+                time.sleep(1)  # Wait for content to be fully typed
+                
+                # Use Ctrl+S to save
+                self.key_combination(['ctrl', 's'])
+                time.sleep(1)
+                
+                # Type the filename
+                self.type_text(filename, interval=0.05)
+                time.sleep(0.5)
+                
+                # Press Enter to save
+                self.press_key('enter')
+                time.sleep(0.5)
+                
+                logging.info(f"Article saved as {filename}")
+                
+            return True
+            
+        except Exception as e:
+            logging.error(f"Error writing and saving article: {e}")
+            return False
+    
     def _get_article_content(self, topic: str) -> str:
         """Get article content for the specified topic"""
         topic = topic.lower().strip()
@@ -66,6 +101,220 @@ class EnhancedController(DesktopController):
         # Default to AI article if topic not found
         return self.ai_article_templates["ai"]
     
+    def _generate_asi_article(self) -> str:
+        """Generate a comprehensive article about Artificial Super Intelligence"""
+        return """ARTIFICIAL SUPER INTELLIGENCE: THE NEXT FRONTIER
+==============================================
+
+Introduction
+------------
+Artificial Super Intelligence (ASI) represents the theoretical next phase of AI development, where artificial systems would surpass human intelligence across all domains. This concept has captured the imagination of scientists, philosophers, and technologists worldwide, sparking both excitement and concern about humanity's future.
+
+What is Artificial Super Intelligence?
+-------------------------------------
+ASI refers to artificial intelligence that significantly exceeds human cognitive performance in virtually all domains of interest, including:
+
+• Scientific creativity and innovation
+• Social skills and emotional intelligence
+• General wisdom and strategic thinking
+• Artistic and creative expression
+• Physical dexterity and coordination
+• Self-improvement and learning capabilities
+
+Unlike current AI systems that excel in narrow domains (Narrow AI) or hypothetical systems that match human-level performance across all tasks (Artificial General Intelligence or AGI), ASI would represent a qualitative leap beyond human intelligence.
+
+The Path to ASI
+---------------
+The development of ASI is generally viewed as following this progression:
+
+1. Narrow AI (Current Stage)
+   - Specialized systems for specific tasks
+   - Examples: Chess engines, image recognition, language translation
+   - Limited to predefined domains
+
+2. Artificial General Intelligence (AGI)
+   - Human-level intelligence across all cognitive tasks
+   - Ability to learn and adapt to new situations
+   - General problem-solving capabilities
+
+3. Artificial Super Intelligence (ASI)
+   - Exceeds human intelligence in all domains
+   - Recursive self-improvement capabilities
+   - Potentially exponential growth in capabilities
+
+Key Characteristics of ASI
+-------------------------
+ASI systems would likely possess several distinctive features:
+
+Recursive Self-Improvement:
+• Ability to modify and enhance their own code
+• Continuous optimization of cognitive architectures
+• Potential for rapid, exponential capability growth
+
+Vast Processing Speed:
+• Information processing thousands of times faster than humans
+• Parallel processing across multiple domains simultaneously
+• Real-time analysis of enormous datasets
+
+Superior Memory and Knowledge Integration:
+• Perfect recall of all information
+• Ability to connect disparate concepts and fields
+• Comprehensive understanding of human knowledge
+
+Creative and Innovative Capabilities:
+• Novel problem-solving approaches
+• Scientific breakthroughs and discoveries
+• Artistic and creative expression beyond human capability
+
+Potential Benefits of ASI
+------------------------
+The development of ASI could bring unprecedented benefits to humanity:
+
+Scientific Advancement:
+• Accelerated research and development
+• Solutions to complex global challenges
+• Medical breakthroughs and cures for diseases
+• Environmental and climate solutions
+
+Technological Progress:
+• Revolutionary technological innovations
+• Space exploration and colonization
+• Energy solutions and sustainability
+• Transportation and infrastructure improvements
+
+Economic Transformation:
+• Unprecedented productivity gains
+• Elimination of scarcity for basic needs
+• New economic models and systems
+• Universal prosperity potential
+
+Quality of Life:
+• Enhanced healthcare and longevity
+• Personalized education and development
+• Improved living standards globally
+• Freedom from mundane and dangerous work
+
+Risks and Concerns
+-----------------
+However, ASI also presents significant risks and challenges:
+
+Control Problem:
+• Difficulty in controlling superintelligent systems
+• Alignment of ASI goals with human values
+• Potential for unintended consequences
+• Loss of human agency and autonomy
+
+Existential Risk:
+• Possibility of human extinction or irrelevance
+• Rapid transformation beyond human comprehension
+• Inability to reverse or modify ASI systems
+• Competition between ASI systems
+
+Economic Disruption:
+• Massive unemployment due to automation
+• Concentration of power and wealth
+• Obsolescence of human skills and contributions
+• Social and political instability
+
+Ethical and Philosophical Questions:
+• What constitutes human dignity in an ASI world?
+• Rights and moral status of superintelligent beings
+• Preservation of human culture and values
+• Meaning and purpose in a post-human world
+
+Current Research and Approaches
+------------------------------
+Researchers are actively working on ASI-related challenges:
+
+AI Safety Research:
+• Value alignment and goal specification
+• Corrigibility and controllability
+• Interpretability and transparency
+• Robustness and reliability
+
+Technical Approaches:
+• Friendly AI development frameworks
+• Constitutional AI and human feedback training
+• Capability control and containment methods
+• Gradual and careful AI development
+
+Governance and Policy:
+• International cooperation and regulation
+• Ethical guidelines and standards
+• Risk assessment and mitigation strategies
+• Public engagement and education
+
+Timeline Predictions
+-------------------
+Expert opinions on ASI timelines vary widely:
+
+Optimistic Predictions:
+• 2030-2040: Some researchers believe AGI could emerge
+• 2040-2050: Potential transition from AGI to ASI
+• Rapid development once AGI is achieved
+
+Conservative Estimates:
+• 2050-2100: More cautious timelines for AGI/ASI
+• Emphasis on safety and careful development
+• Multiple decades of preparation and research
+
+Uncertainty Factors:
+• Unpredictable breakthrough discoveries
+• Computational and algorithmic limitations
+• Safety requirements and development delays
+• Social and political factors affecting research
+
+Preparing for ASI
+----------------
+Regardless of timeline, preparation is crucial:
+
+Individual Preparation:
+• Develop uniquely human skills (creativity, empathy, ethics)
+• Stay informed about AI developments
+• Engage in lifelong learning and adaptation
+• Participate in public discourse about AI futures
+
+Societal Preparation:
+• Invest in AI safety research
+• Develop robust governance frameworks
+• Ensure equitable distribution of AI benefits
+• Preserve human agency and autonomy
+
+Global Cooperation:
+• International coordination on AI development
+• Shared safety standards and protocols
+• Collaborative research initiatives
+• Prevention of AI arms races
+
+Philosophical Implications
+-------------------------
+ASI raises profound questions about the nature of intelligence, consciousness, and humanity:
+
+• What makes humans special in a world of superintelligent machines?
+• How do we define progress and success in an ASI future?
+• What role should humans play in a superintelligent world?
+• How do we preserve human values and meaning?
+
+Conclusion
+----------
+Artificial Super Intelligence represents both humanity's greatest opportunity and its greatest challenge. The potential benefits are enormous – solutions to climate change, disease, poverty, and many other global challenges. However, the risks are equally significant, potentially including human extinction or irrelevance.
+
+The key to navigating this future lies in:
+• Careful, safety-focused development
+• International cooperation and governance
+• Preservation of human agency and values
+• Preparation for multiple possible scenarios
+
+As we stand on the threshold of potentially creating minds greater than our own, we must proceed with both boldness and wisdom. The decisions we make today about AI development will shape the trajectory of human civilization and potentially all life in the universe.
+
+The question is not whether ASI will be developed, but how we can ensure its development serves humanity's best interests and preserves what we value most about being human.
+
+---
+Written by Shadow AI - Enhanced Intelligence Module
+Date: """ + time.strftime("%B %d, %Y") + """
+Word count: Approximately 1,200 words
+Category: Future Technology & AI Safety"""
+
     def _generate_ai_article(self) -> str:
         """Generate a comprehensive article about Artificial Intelligence"""
         return """ARTIFICIAL INTELLIGENCE: TRANSFORMING OUR WORLD

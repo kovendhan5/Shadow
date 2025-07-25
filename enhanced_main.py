@@ -138,8 +138,10 @@ class EnhancedShadowAI:
         
         print(f"\n{help_color}🎯 ARTICLE GENERATION:")
         print(f"{cmd_color}  • write an article about ai       {help_color}- Comprehensive AI article")
+        print(f"{cmd_color}  • write an article about asi      {help_color}- Artificial Super Intelligence")
         print(f"{cmd_color}  • write an article about ml       {help_color}- Machine Learning article")
         print(f"{cmd_color}  • write an article about tech     {help_color}- Technology overview")
+        print(f"{cmd_color}  • [topic] and save it as [file]   {help_color}- Write and save with filename")
         
         print(f"\n{help_color}🔧 SYSTEM COMMANDS:")
         print(f"{cmd_color}  • help                            {help_color}- Show this help")
@@ -217,10 +219,40 @@ class EnhancedShadowAI:
                         success = enhanced_controller.type_text(article_content, interval=0.02)
                 
                 if success:
-                    self.print_response(f"✅ Successfully wrote article about {topic}!", "success")
+                    self.print_response(f"✅ Article about {topic} written!", "success")
                 else:
-                    self.print_response("❌ Failed to write article.", "error")
+                    self.print_response("❌ Enhanced desktop controller not available", "error")
                 return True
+            
+            # Article generation with save
+            elif "write an article about" in command_lower and "save" in command_lower:
+                parts = command_lower.split("and save it as")
+                if len(parts) == 2:
+                    topic = parts[0].split("write an article about")[1].strip()
+                    filename = parts[1].strip()
+                    self.print_response(f"📝 Writing article about {topic} and saving as {filename}...", "info")
+                    
+                    if hasattr(enhanced_controller, 'open_notepad_and_write_article_save_as'):
+                        success = enhanced_controller.open_notepad_and_write_article_save_as(topic, filename)
+                    else:
+                        # Fallback method
+                        success = enhanced_controller.open_notepad()
+                        if success:
+                            time.sleep(2)
+                            article_content = self.generate_basic_article(topic)
+                            success = enhanced_controller.type_text(article_content, interval=0.02)
+                            if success:
+                                # Try to save
+                                enhanced_controller.key_combination(['ctrl', 's'])
+                                time.sleep(1)
+                                enhanced_controller.type_text(filename)
+                                enhanced_controller.press_key('enter')
+                    
+                    if success:
+                        self.print_response(f"✅ Article about {topic} written and saved as {filename}!", "success")
+                    else:
+                        self.print_response("❌ Enhanced desktop controller not available", "error")
+                    return True
             
             # Notepad commands
             elif "open notepad and write" in command_lower:
@@ -435,10 +467,32 @@ Date: {time.strftime('%B %d, %Y')}
                 self.print_response(f"❌ Unexpected error: {e}", "error")
 
 def main():
-    """Main entry point"""
+    """Main entry point with GUI option"""
+    import argparse
+    
+    parser = argparse.ArgumentParser(description="Shadow AI Enhanced")
+    parser.add_argument("--gui", action="store_true", help="Launch GUI interface")
+    parser.add_argument("--cli", action="store_true", help="Launch CLI interface")
+    
+    args = parser.parse_args()
+    
     try:
-        shadow_ai = EnhancedShadowAI()
-        shadow_ai.run()
+        if args.gui:
+            # Launch GUI
+            try:
+                from gui.modern_gui import ModernShadowAI
+                app = ModernShadowAI()
+                app.run()
+            except ImportError as e:
+                print(f"GUI not available: {e}")
+                print("Falling back to CLI interface...")
+                shadow_ai = EnhancedShadowAI()
+                shadow_ai.run()
+        else:
+            # Default to CLI
+            shadow_ai = EnhancedShadowAI()
+            shadow_ai.run()
+            
     except Exception as e:
         print(f"Failed to start Shadow AI: {e}")
         return 1
