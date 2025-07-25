@@ -6,6 +6,7 @@ echo Starting Shadow AI with enhanced features...
 echo.
 
 cd /d "%~dp0"
+cd ..\..
 python launch_working.py
 
 echo.
